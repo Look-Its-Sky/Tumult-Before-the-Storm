@@ -1,6 +1,6 @@
 package com.jude.tumultbts;
 
-//Text effects class - i overcomplicated this but lets go with it
+//Text effects class - i overcomplicated this but lets go with it i learned my lesson
 public class Text {
 
     private float fade, fade2;

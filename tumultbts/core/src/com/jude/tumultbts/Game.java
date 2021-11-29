@@ -19,6 +19,7 @@ public class Game extends ApplicationAdapter {
 	
 	private boolean isMenuOpen; //Note: this refers to in game
 	private boolean isInGame;
+	private boolean isCharacterMade;
 
 	private String sex;
 	private String player_class;
@@ -45,13 +46,12 @@ public class Game extends ApplicationAdapter {
 
 	private Thread t1;
 	
-	//Constants NOTE: i gotta change these
+	//Constants NOTE: i gotta change these theyre just placeholders
 	private final int[] p1DefaultFightingPos = {100,100};
 	private final int[] p2DefaultFightingPos = {500,500};
 
 	/*
-	FUCK
-	Fade isnt saving because the objects go out of scope  before fade can be added to make a visible text
+	Fade isnt saving because the objects go out of scope before fade can be added to make a visible text
 
 	Some solutions:
 	Make an arrayList to handle temporaries and memory manage myself ie: set clean the arraylist after every "scene" -- the option im going to do
@@ -113,11 +113,9 @@ public class Game extends ApplicationAdapter {
 		
 		isInGame = false;
 		isMenuOpen = false;
+		isCharacterMade = false;
 
 		temp = new ArrayList<Text>(); //A arraylist for handling all text scene by scene
-
-		t1 = new Thread(p1);
-		t1.start();
 	}
 
 	//**************************************************************Graphics**************************************************************
@@ -160,9 +158,9 @@ public class Game extends ApplicationAdapter {
 			//Load into world
 			case 0:
 				//loadFromSave();
-				initiatePlayer(p1DefaultFightingPos[0], p1DefaultFightingPos[1]);
+				initiatePlayer(p1DefaultFightingPos[0], p1DefaultFightingPos[1]); //Change this eventually its just for testing
 				loadWorld();
-				p1.enableInput();
+				renderPlayer();
 				break;
 				
 			default:
@@ -330,8 +328,6 @@ public class Game extends ApplicationAdapter {
 				System.out.println("HEY HEY THERES NO AREA LOADED YK \n LIKE THATS A REALLY BIG ISSUE");
 				break;
 		}
-
-		this.renderPlayer();
 	}
 
 	//**************************************************************Area Rendering**************************************************************
@@ -340,12 +336,15 @@ public class Game extends ApplicationAdapter {
 	{
 		batch.draw(area1, 0, 0);
 		p1.toggleRPG();
+
 		//Set bounds
+
+		//TODO: need boundary code for the starting area
 	}
 
 	//**************************************************************Save States**************************************************************
 	
-	//Strong maybe but it would be badass
+	//Strong maybe but it would be cool
 	public int loadFromSave()
 	{
 		return 1;
@@ -358,7 +357,7 @@ public class Game extends ApplicationAdapter {
 	
 	//**************************************************************Text Anim**************************************************************
 	
-	//Note all this code below is kinda shitty and should be redone -- edit: i somehow made it worse
+	//Note all this code below is kinda bad and should be redone -- edit: i somehow made it worse lmao
 
 	//Some simple fade code
 	public void startFade(Text text)
@@ -367,7 +366,8 @@ public class Game extends ApplicationAdapter {
 		font.draw(batch, text.returnText(), text.returnX(), text.returnY());
 		font.setColor(255, 255, 255, text.returnFade());
 	}
-	
+
+	//The menu does not work yet
 	public void loadMenu()
 	{
 		//Initial start menu
@@ -376,13 +376,13 @@ public class Game extends ApplicationAdapter {
 			//Background obv
 			batch.draw(background, 0 ,0);
 
-			//Title obv -- FIX THIS SHIT LATER
+			//Title obv -- FIX THIS LATER
 			//batch.draw(title, 0, 350);
 
 			//Buttons not so obv
 		}
 		
-		//Menu when opened anywhere else in the game
+		//Menu when opened anywhere else in game
 		else
 		{
 			
@@ -401,12 +401,18 @@ public class Game extends ApplicationAdapter {
 	//**************************************************************Characters**************************************************************
 	
 	public void initiatePlayer(int paramX, int paramY)
-	{	
-		//Convert the string to char cause i was dumb
-		char temp = sex.charAt(0);
-		p1 = new Player(paramX, paramY, temp, player_class); //WUT
+	{
+		if(!isCharacterMade)
+		{
+			char temp = sex.charAt(0); //Convert the string to char cause i was dumb
+			p1 = new Player(paramX, paramY, temp, player_class);
+			p1.enableInput();
+			isCharacterMade = true;
+
+		}
 	}
-	
+
+	//For later use whenever I get fighting mode to work
 	public void initiateNPC()
 	{
 

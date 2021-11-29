@@ -2,6 +2,8 @@ package com.jude.tumultbts;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /*
 NOTE:
@@ -19,8 +21,17 @@ public class Keyboard extends Thread
 
 	private int writer;
 
+	private Timer timer;
+
 	//Attacks and key stuff
 	//Represented as ASCII int
+
+	/*
+	NOTE: THESE ENUMS ARE A WORK IN PROGRESS AND ARE SUBJECT TO CHANGE
+	THERE ARE A SNIPPET FROM A KEYBOARD CLASS I AM WRITING
+	TO MAKE THIS STUFF EASIER
+	IT IS MESSY AND WILL BE FIXED
+	 */
 	public enum keys
 	{
 		LEFT(Input.Keys.A),
@@ -57,7 +68,7 @@ public class Keyboard extends Thread
 					return Input.Keys.S;
 
 				default:
-					return 999; //rip juice- its also an error so something fucked up
+					return 999;
 			}
 		}
 
@@ -86,7 +97,6 @@ public class Keyboard extends Thread
 		{
 			this.label = label;
 		}
-
 
 
 		//Checks what enum itself is and returns a string to accurately represent itself
@@ -156,9 +166,10 @@ public class Keyboard extends Thread
 		currentKeys = new int[1];
 		currentInput = "";
 		writer = 0;
+		timer = new Timer();
 	}
 
-	//For fighting i hope
+	//For fighting once it is implemented
 	private void handleInput()
 	{
 		if(writer + 1 > 1) writer = 0;
@@ -177,42 +188,47 @@ public class Keyboard extends Thread
 
 	public String returnCurrentInput()
 	{
-		System.out.println(currentInput);
 		return currentInput;
 	}
 
-	//Makeshift until i get this thread running again
-
-	public void run()
+	//Just so my thread looks cleaner im messing around with it a lot
+	private void checkForInput()
 	{
-		if(mode == "fight")
+		if (mode == "fight")
 		{
 			handleInput();
 		}
 
-		if(mode == "rpg")
+		if (mode == "rpg")
 		{
-
-			if(Gdx.input.isKeyPressed(Input.Keys.A))
+			if (Gdx.input.isKeyPressed(Input.Keys.A))
 			{
 				currentInput = "left";
 			}
 
-			if(Gdx.input.isKeyPressed(Input.Keys.D))
+			if (Gdx.input.isKeyPressed(Input.Keys.D))
 			{
 				currentInput = "right";
 			}
 
-			if(Gdx.input.isKeyPressed(Input.Keys.W))
+			if (Gdx.input.isKeyPressed(Input.Keys.W))
 			{
 				currentInput = "up";
 			}
 
-			if(Gdx.input.isKeyPressed(Input.Keys.S))
+			if (Gdx.input.isKeyPressed(Input.Keys.S))
 			{
 				currentInput = "down";
 			}
 		}
+	}
 
+	//There is a delay and it does not work; I am still troubleshooting
+	public void run()
+	{
+		while(true)
+		{
+			checkForInput();
+		}
 	}
 }

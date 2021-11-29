@@ -50,6 +50,8 @@ public class Player extends StandardObj implements Runnable{
 				break;
 		}
 
+
+
 	}
 
 
@@ -115,40 +117,22 @@ public class Player extends StandardObj implements Runnable{
 
 	public void setState(String s)
 	{
-		//Error checking here potentially - its not needed unless ur dumb - watch me break it
+		//Error checking here potentially - its not needed unless ur dumb - watch me break it - update: i broke it -- UPDATE to update: i fixed it
 		state = s;
 	}
 
 	public Texture renderPlayer()
 	{
-		System.out.print(input.returnCurrentInput());
-
 		switch(input.returnCurrentInput())
 		{
 			case "left":
+
+			case "right":
 				state = "run";
-				System.out.println("Print");
+
+			default:
 				break;
 		}
-
-		/*
-		//RPG Style Animations
-		if(mode == "rpg")
-		{
-
-		}
-
-		//Fighting animations
-		else if(mode == "fight")
-		{
-
-		}
-
-		else
-		{
-			System.err.println("ISSUE WITH MODE IN PLAYER CLASS");
-		}
-		*/
 
 		switch(state)
 		{
@@ -217,9 +201,11 @@ public class Player extends StandardObj implements Runnable{
 		input.toggleFight();
 	}
 
-	//My special thread for inputs hopefully my idea doesnt go to shit
+	//My special thread for inputs hopefully my idea doesnt go to garbage
 	//NOTE: this should handle anims only keyboard handles inputs
-	//UPDATE: it went to shit ill fix it later or not
+	//UPDATE: it went to garbage ill fix it later for now i implemented a work around
+	//TODO: MAYBE add support for this thread to handle animations
+	//NOTE: this could use more resources than I intend to
 	public void run()
 	{
 
