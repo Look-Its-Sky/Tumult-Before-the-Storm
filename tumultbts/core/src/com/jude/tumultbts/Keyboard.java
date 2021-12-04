@@ -11,13 +11,11 @@ I ABSOLUTELY HATE IT
 ILL WRITE MY OWN UNIVERSAL KEYBOARD CLASS ONE DAY
  */
 
-public class Keyboard extends Thread
+public class Keyboard
 {
-	private int[] currentKeys;
 	private String currentInput;
-	private String mode;
 
-	//Constants
+	//Keyboard Constants
 	private final int UP = Input.Keys.W;
 	private final int LEFT = Input.Keys.A;
 	private final int DOWN = Input.Keys.S;
@@ -25,29 +23,20 @@ public class Keyboard extends Thread
 	private final int j = Input.Keys.J;
 	private final int k = Input.Keys.K;
 
+	//Light Attacks
 	private final String nlight = String.valueOf(j);
 	private final String slightl = String.valueOf(LEFT + " " + j);
 	private final String slightr = String.valueOf(RIGHT + " " + j);
 	private final String dlight = String.valueOf(DOWN + " " + j);
 
+	//Heavy Attacks
 	private final String nheavy = String.valueOf(k);
 	private final String sheavyl = String.valueOf(LEFT + " " + k);
 	private final String sheavyr = String.valueOf(RIGHT + " " + k);
- 	private final String dheavy = String.valueOf(DOWN + " " + k);
-
-	public void toggleRPG()
-	{
-		mode = "rpg";
-	}
-
-	public void toggleFight()
-	{
-		mode = "fighting";
-	}
+	private final String dheavy = String.valueOf(DOWN + " " + k);
 
 	public Keyboard()
 	{
-		currentKeys = new int[1];
 		currentInput = "";
 	}
 
@@ -57,12 +46,14 @@ public class Keyboard extends Thread
 	}
 
 	//Just so my thread looks cleaner im messing around with it a lot
-	private void checkForInput()
+	public String checkForInput(String mode)
 	{
+		currentInput = "";
+
 		if (mode == "fight")
 		{
 			//Handle fighting inputs and combos
-            //TODO: inputs/combos
+			//TODO: inputs/combos
 		}
 
 		if (mode == "rpg")
@@ -87,11 +78,12 @@ public class Keyboard extends Thread
 				currentInput = "down";
 			}
 		}
+
+		return currentInput;
 	}
 
-
-	public void run()
+	public String returnInput()
 	{
-		checkForInput();
+		return currentInput;
 	}
 }

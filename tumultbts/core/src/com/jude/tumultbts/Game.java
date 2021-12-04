@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import java.util.ArrayList;
 
-public class Game extends ApplicationAdapter {
+public class Game extends ApplicationAdapter{
 	
 	//Garbage Collector Friendly Variables
 	private int state;
@@ -23,6 +23,7 @@ public class Game extends ApplicationAdapter {
 
 	private String sex;
 	private String player_class;
+	private String mode;
 
 	private ArrayList<Text> temp;
 	private ArrayList<int[]> bounds;
@@ -45,6 +46,7 @@ public class Game extends ApplicationAdapter {
 	private Text gtemp;
 
 	private Thread t1;
+	private Thread t;
 	
 	//Constants NOTE: i gotta change these theyre just placeholders
 	private final int[] p1DefaultFightingPos = {100,100};
@@ -158,9 +160,8 @@ public class Game extends ApplicationAdapter {
 			//Load into world
 			case 0:
 				//loadFromSave();
-				initiatePlayer(p1DefaultFightingPos[0], p1DefaultFightingPos[1]); //Change this eventually its just for testing
 				loadWorld();
-				renderPlayer();
+				initiatePlayer(100, 100); //Change this eventually its just for testing
 				break;
 				
 			default:
@@ -335,10 +336,10 @@ public class Game extends ApplicationAdapter {
 	public void loadStartingArea()
 	{
 		batch.draw(area1, 0, 0);
-		p1.toggleRPG();
+
+		mode = "rpg";
 
 		//Set bounds
-
 		//TODO: need boundary code for the starting area
 	}
 
@@ -406,10 +407,18 @@ public class Game extends ApplicationAdapter {
 		{
 			char temp = sex.charAt(0); //Convert the string to char cause i was dumb
 			p1 = new Player(paramX, paramY, temp, player_class);
-			p1.enableInput();
 			isCharacterMade = true;
-
 		}
+
+			//TODO: Add Fighting mode to drawing
+			p1.updatePos();
+			batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY());
+
+			//Set Mode
+			if(mode == "rpg") p1.toggleRPG();
+			else if(mode ==  "fight") p1.toggleFight();
+			else System.err.println("ERROR: No Valid Mode Set");
+
 	}
 
 	//For later use whenever I get fighting mode to work
@@ -418,9 +427,11 @@ public class Game extends ApplicationAdapter {
 
 	}
 
-	public void renderPlayer()
+	public void run()
 	{
-		batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY());
+		if(Gdx.input.isKeyPressed(Input.Keys.A))
+		{
+			System.out.println("Works");
+		}
 	}
-
 }
