@@ -6,9 +6,16 @@ import java.util.ArrayList;
 public class Player extends StandardObj implements Runnable{
 
 	private int animCounter;
+	private int animSpeed;
+	private int animSpeedCount;
+
+	private final boolean isDebug = false;
+
 	private Keyboard keyboard;
+
 	private String state;
 	private String mode;
+
 	private Thread t;
 
 	public Player(int paramX, int paramY, char gender, String pClass)
@@ -18,6 +25,10 @@ public class Player extends StandardObj implements Runnable{
 
 		x = paramX;
 		y = paramY;
+
+		animCounter = 0;
+		animSpeedCount = 0;
+		animSpeed = 25;
 
 		pClassObj = new StandardChar(gender, pClass);
 		keyboard = new Keyboard();
@@ -98,16 +109,6 @@ public class Player extends StandardObj implements Runnable{
 		return animCounter;
 	}
 
-	public void addCount()
-	{
-		animCounter++;
-	}
-
-	public void addCount(int num)
-	{
-		animCounter += num;
-	}
-
 	//Set the state of the player
 	public void setState(String s)
 	{
@@ -134,9 +135,19 @@ public class Player extends StandardObj implements Runnable{
 		}
 	}
 
+	//Returns correct texture for idle animation
 	public Texture renderPlayer()
 	{
-		return returnIdleAnim().get(0);
+		if(!shouldFrameRender()) return returnIdleAnim().get(animCounter);
+
+		if(animCounter + 1 >= returnIdleAnim().size())
+		{
+			if(isDebug) System.out.println("Anim Reset");
+			animCounter = 0;
+		}
+
+		animCounter++;
+		return returnIdleAnim().get(animCounter);
 	}
 
 	//Should be fine for a fixed number of players and npcs
@@ -196,6 +207,27 @@ public class Player extends StandardObj implements Runnable{
 			default:
 				break;
 		}
+	}
+
+	//Helps to ease the speed how the frames switching
+	private boolean shouldFrameRender()
+	{
+		//So we dont over run the int limit and crash which would be very bad
+		if(animSpeedCount + 1 > 2147483647) animSpeedCount = 0;
+
+		animSpeedCount++;
+
+		if(animSpeedCount %animSpeed == 1)
+		{
+			if(isDebug) System.out.println(animSpeedCount);
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
+
 	}
 
 	@Override

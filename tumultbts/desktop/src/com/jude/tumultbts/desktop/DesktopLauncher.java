@@ -1,5 +1,6 @@
 package com.jude.tumultbts.desktop;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.jude.tumultbts.Game;
@@ -14,10 +15,15 @@ public class DesktopLauncher {
 		//YES FINALLY IT WORKS.... imma have to bring my laptop to school to present
 		
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new Game(), config);
-		
+
 		//Window settings
 		config.title = "Tumult: Before the Storm";
 		config.resizable = false;
+		config.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
+		config.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
+		config.fullscreen = true;
+		config.foregroundFPS = 60;
+
+		new LwjglApplication(new Game(), config);
 	}
 }

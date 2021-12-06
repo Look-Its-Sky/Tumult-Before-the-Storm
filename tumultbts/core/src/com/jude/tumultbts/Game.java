@@ -3,8 +3,10 @@ package com.jude.tumultbts;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
@@ -16,6 +18,7 @@ public class Game extends ApplicationAdapter{
 	private int state;
 	private int cutscene, area;
 	private int whereIsCursor;
+	private int screenHeight, screenWidth;
 	
 	private boolean isMenuOpen; //Note: this refers to in game
 	private boolean isInGame;
@@ -44,9 +47,6 @@ public class Game extends ApplicationAdapter{
 	private Player npc;
 
 	private Text gtemp;
-
-	private Thread t1;
-	private Thread t;
 	
 	//Constants NOTE: i gotta change these theyre just placeholders
 	private final int[] p1DefaultFightingPos = {100,100};
@@ -112,6 +112,9 @@ public class Game extends ApplicationAdapter{
 		cutscene = -1;
 		area = 0;
 		whereIsCursor = 0;
+
+		screenHeight = Gdx.graphics.getHeight();
+		screenWidth = Gdx.graphics.getWidth();
 		
 		isInGame = false;
 		isMenuOpen = false;
@@ -125,9 +128,10 @@ public class Game extends ApplicationAdapter{
 	public void render()
 	{
 		ScreenUtils.clear(1, 0, 0, 1);
-		
 		batch.begin();
-		
+
+		if(state > -5 && state  < 0) batch.draw(background, 0, 0, screenWidth, screenHeight);
+
 		switch(state)
 		{
 			//Add splash screen
@@ -136,24 +140,20 @@ public class Game extends ApplicationAdapter{
 
 			//Start menu
 			case -4:
-				batch.draw(background, 0, 0);
 				loadMenu();
 				break;
 		
 			case -3:
-				batch.draw(background, 0, 0);
 				begin();
 				break;
 		
 			//Choose gender
 			case -2:
-				batch.draw(background, 0, 0);
 				chooseSex();
 				break;
 			
 			//Choose class
 			case -1:
-				batch.draw(background, 0, 0);
 				chooseClass();		
 				break;
 
@@ -172,7 +172,7 @@ public class Game extends ApplicationAdapter{
 		batch.end();
 		
 	}
-	
+
 	
 	//**************************************************************Clean up**************************************************************
 	@Override
@@ -203,7 +203,7 @@ public class Game extends ApplicationAdapter{
 	{
 		if(temp.isEmpty())
 		{
-			temp.add(new Text("You are dreaming", 250, 410));
+			temp.add(new Text("You are dreaming", screenHeight/2, screenWidth/2 + 100));
 			temp.add(new Text("Press ENTER to Continue", 230, 390));
 		}
 
@@ -335,7 +335,7 @@ public class Game extends ApplicationAdapter{
 
 	public void loadStartingArea()
 	{
-		batch.draw(area1, 0, 0);
+		batch.draw(area1, 0, 0, screenWidth, screenHeight);
 
 		mode = "rpg";
 
@@ -377,16 +377,17 @@ public class Game extends ApplicationAdapter{
 			//Background obv
 			batch.draw(background, 0 ,0);
 
-			//Title obv -- FIX THIS LATER
+			//TODO: Title obv -- FIX THIS LATER
 			//batch.draw(title, 0, 350);
 
 			//Buttons not so obv
+			//TODO: Make buttons for start menu
 		}
 		
 		//Menu when opened anywhere else in game
 		else
 		{
-			
+			//TODO: Make in-game menu assets
 		}
 	}
 
@@ -427,11 +428,5 @@ public class Game extends ApplicationAdapter{
 
 	}
 
-	public void run()
-	{
-		if(Gdx.input.isKeyPressed(Input.Keys.A))
-		{
-			System.out.println("Works");
-		}
-	}
+	//**************************************************************Misc**************************************************************
 }
