@@ -121,12 +121,12 @@ public class StandardChar {
 				
 				if(gender == 'f')
 				{
-					path = "./Viking_Female";
+					path = "./Viking_Female/";
 				}
 				
 				else if(gender == 'm')
 				{
-					path = "./Viking_Male";
+					path = "./Viking_Male/";
 				}
 				
 				break;
@@ -175,7 +175,7 @@ public class StandardChar {
 		hitAnim.add(new Texture(path + jump + ".png"));
 
 		//Run Anim
-		for (int i = 1; i < 3; i++)
+		for (int i = 1; i < 5; i++)
 		{
 			runAnim.add(new Texture(path + run + i + ".png"));
 		}

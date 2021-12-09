@@ -61,25 +61,29 @@ public class Keyboard
 			if (Gdx.input.isKeyPressed(Input.Keys.A))
 			{
 				currentInput = "left";
+				return "left";
 			}
 
 			if (Gdx.input.isKeyPressed(Input.Keys.D))
 			{
 				currentInput = "right";
+				return "right";
 			}
 
 			if (Gdx.input.isKeyPressed(Input.Keys.W))
 			{
 				currentInput = "up";
+				return "up";
 			}
 
 			if (Gdx.input.isKeyPressed(Input.Keys.S))
 			{
 				currentInput = "down";
+				return "down";
 			}
 		}
 
-		return currentInput;
+		return "";
 	}
 
 	public String returnInput()

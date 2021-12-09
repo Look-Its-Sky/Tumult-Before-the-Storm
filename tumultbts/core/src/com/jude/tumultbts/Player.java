@@ -1,15 +1,25 @@
 package com.jude.tumultbts;
 
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
+import java.util.*;
 
-public class Player extends StandardObj implements Runnable{
+public class Player extends StandardObj implements InputProcessor{
 
 	private int animCounter;
 	private int animSpeed;
 	private int animSpeedCount;
 
+	private final int speed = 2;
+
 	private final boolean isDebug = false;
+
+	private boolean isVisible;
+	private boolean isUp;
+	private boolean isDown;
+	private boolean isLeft;
+	private boolean isRight;
 
 	private Keyboard keyboard;
 
@@ -17,6 +27,8 @@ public class Player extends StandardObj implements Runnable{
 	private String mode;
 
 	private Thread t;
+
+	private ArrayList<Texture> currentAnim;
 
 	public Player(int paramX, int paramY, char gender, String pClass)
 	{
@@ -28,15 +40,13 @@ public class Player extends StandardObj implements Runnable{
 
 		animCounter = 0;
 		animSpeedCount = 0;
-		animSpeed = 25;
+		animSpeed = 20;
 
 		pClassObj = new StandardChar(gender, pClass);
 		keyboard = new Keyboard();
 
 		state = "idle";
-
-		t = new Thread(this);
-		t.start();
+		currentAnim = returnIdleAnim(); //Set default anim
 
 		//TODO: Set stats
 		switch(pClass)
@@ -102,11 +112,32 @@ public class Player extends StandardObj implements Runnable{
 	public void resetAnimCounter()
 	{
 		animCounter = 0;
+		if(isDebug) System.out.println("Anim Reset");
 	}
 
 	public int returnAnimCounter()
 	{
 		return animCounter;
+	}
+
+	private void nextFrame()
+	{
+		animCounter++;
+	}
+
+	private void prevFrame()
+	{
+		animCounter--;
+	}
+
+	//Reset Counter if there are no more frames to be rendered
+	private void autoResetAnimCounter()
+	{
+		if(animCounter + 1 >= currentAnim.size())
+		{
+			if(isDebug) System.out.println("Anim Reset");
+			animCounter = 0;
+		}
 	}
 
 	//Set the state of the player
@@ -135,19 +166,26 @@ public class Player extends StandardObj implements Runnable{
 		}
 	}
 
-	//Returns correct texture for idle animation
+	//Returns correct texture for current animation
 	public Texture renderPlayer()
 	{
-		if(!shouldFrameRender()) return returnIdleAnim().get(animCounter);
-
-		if(animCounter + 1 >= returnIdleAnim().size())
+		switch(state)
 		{
-			if(isDebug) System.out.println("Anim Reset");
-			animCounter = 0;
+			case "idle":
+				currentAnim = returnIdleAnim();
+				break;
+
+			case "run":
+				currentAnim = returnRunAnim();
+				break;
+
+			default:
+				currentAnim = returnIdleAnim();
+				System.err.println("Error in Rendering Player");
+				break;
 		}
 
-		animCounter++;
-		return returnIdleAnim().get(animCounter);
+		return returnIdleAnim().get(0);
 	}
 
 	//Should be fine for a fixed number of players and npcs
@@ -186,35 +224,99 @@ public class Player extends StandardObj implements Runnable{
 
 	public void updatePos()
 	{
+		/*
+		First attempt
 		switch (keyboard.checkForInput(mode))
 		{
 			case "left":
-				x -= 5;
+				state = "run";
+				x -= speed;
 				break;
 
 			case "right":
-				x += 5;
+				state = "run";
+				x += speed;
 				break;
 
 			case "up":
-				if (mode == "rpg") y += 5;
+				if (mode == "rpg")
+				{
+					state = "run";
+					y += speed;
+				}
 				break;
 
 			case "down":
-				if (mode == "rpg") y -= 5;
+				if (mode == "rpg")
+				{
+					state = "run";
+					y -= speed;
+				}
 				break;
 
 			default:
+				state = "idle";
 				break;
 		}
+		*/
+
+		//Second attempt
+
+		isDown = false;
+		isUp = false;
+		isLeft = false;
+		isRight = false;
+
+		//Check to see inputs
+		if(keyboard.checkForInput(mode) == "left")
+		{
+			state = "run";
+			isLeft = true;
+			isRight = false;
+		}
+
+		if(keyboard.checkForInput(mode) == "right")
+		{
+			state = "run";
+			isRight = true;
+			isLeft = false;
+		}
+
+		if(keyboard.checkForInput(mode) == "up")
+		{
+			state = "run";
+			isUp = true;
+			isDown = false;
+		}
+
+		if(keyboard.checkForInput(mode) == "down")
+		{
+			state = "run";
+			isDown = true;
+			isUp = false;
+		}
+
+		if(keyboard.checkForInput(mode) == "")
+		{
+			state = "idle	";
+			isDown = false;
+			isUp = false;
+			isLeft = false;
+			isRight = false;
+		}
+
+		//Actually implementing the actions
+		if(isUp) y += speed;
+		if(isDown) y -= speed;
+		if(isLeft) x -= speed;
+		if(isRight) x += speed;
 	}
 
-	//Helps to ease the speed how the frames switching
+	//Helps to ease the speed of the frames switching
 	private boolean shouldFrameRender()
 	{
-		//So we dont over run the int limit and crash which would be very bad
+		//So we dont overrun the int limit and crash which would be very bad
 		if(animSpeedCount + 1 > 2147483647) animSpeedCount = 0;
-
 		animSpeedCount++;
 
 		if(animSpeedCount %animSpeed == 1)
@@ -227,13 +329,9 @@ public class Player extends StandardObj implements Runnable{
 		{
 			return false;
 		}
-
 	}
 
-	@Override
-	public void run()
-	{
-		//It works now not sure how but it does
-		updatePos();
-	}
+
+
+
 }

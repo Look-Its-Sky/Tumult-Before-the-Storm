@@ -6,14 +6,18 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.jude.tumultbts.Game;
 
 public class DesktopLauncher {
-	
-	private static final int width = 500;
-	private static final int height = 500;
-	
+
+	//only supports my school laptop resolution for now
+
+	/*
+	 private static final int width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
+	 private static final int length = LwjglApplicationConfiguration.getDesktopDisplayMode().length;
+	 */
+	private static final int width = 1280;
+	private static final int length = 720;
+
 	public static void main (String[] arg)
 	{
-		//YES FINALLY IT WORKS.... imma have to bring my laptop to school to present
-		
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		//Window settings

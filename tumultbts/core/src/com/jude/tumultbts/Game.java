@@ -203,8 +203,8 @@ public class Game extends ApplicationAdapter{
 	{
 		if(temp.isEmpty())
 		{
-			temp.add(new Text("You are dreaming", screenHeight/2, screenWidth/2 + 100));
-			temp.add(new Text("Press ENTER to Continue", 230, 390));
+			temp.add(new Text("You are dreaming", screenWidth/2 - 50, screenHeight/2 + 105));
+			temp.add(new Text("Press ENTER to Continue", screenWidth/2 - 75, screenHeight/2 + 75));
 		}
 
 		startFade(temp.get(0));
@@ -222,10 +222,10 @@ public class Game extends ApplicationAdapter{
 	{
 		if (temp.isEmpty())
 		{
-			temp.add(new Text("In this dream you are a", 230, 380));
-			temp.add(new Text("(M)ale", 270, 330));
-			temp.add(new Text("or", 270, 280));
-			temp.add(new Text("(F)emale", 270, 230));
+			temp.add(new Text("In this dream you are a", screenWidth/2 - 63, screenHeight/2 + 100));
+			temp.add(new Text("(M)ale", screenWidth/2 - 20, screenHeight/2 + 70));
+			temp.add(new Text("or", screenWidth/2 - 15, screenHeight/2 + 40));
+			temp.add(new Text("(F)emale", screenWidth/2 - 20, screenHeight/2 + 10));
 		}
 
 		for(int i = 0; i < temp.size(); i++)
@@ -245,14 +245,15 @@ public class Game extends ApplicationAdapter{
 	//-1 Works!
 	public void chooseClass()
 	{
+
 		if(temp.isEmpty())
 		{
-			temp.add(new Text("You dreamt as yourself being a", 225, 450));
-			temp.add(new Text("(P)irate", 80, 250));
-			temp.add(new Text("(R)oyal Guard", 150, 250));
-			temp.add(new Text("(S)amurai", 260, 250));
-			temp.add(new Text("Sparta(n)", 380, 250));
-			temp.add(new Text("(V)iking", 480, 250));
+			temp.add(new Text("You dreamt yourself being a", screenWidth/2 - 75, screenHeight/2 + 100));
+			temp.add(new Text("(P)irate", screenWidth/2 - 200, screenHeight/2 - 30));
+			temp.add(new Text("(R)oyal Guard", screenWidth/2 - 115, screenHeight/2 - 30));
+			temp.add(new Text("(S)amurai", screenWidth/2 - 10, screenHeight/2 - 30));
+			temp.add(new Text("Sparta(n)", screenWidth/2 + 90, screenHeight/2 - 30));
+			temp.add(new Text("(V)iking", screenWidth/2 + 190, screenHeight/2 - 30));
 		}
 
 		//Draw character select
@@ -264,21 +265,21 @@ public class Game extends ApplicationAdapter{
 		//Female characters
 		if(sex == "f")
 		{
-			batch.draw(pirateF, 50, 250);
-			batch.draw(royal_guardF, 150, 250);
-			batch.draw(samuraiF, 250, 250);
-			batch.draw(spartanF, 360, 250);
-			batch.draw(vikingF, 460, 250);
+			batch.draw(pirateF, screenWidth/2 - 220, screenHeight/2 - 20);
+			batch.draw(royal_guardF, screenWidth/2 - 110, screenHeight/2 - 20);
+			batch.draw(samuraiF, screenWidth/2 - 10, screenHeight/2 - 20);
+			batch.draw(spartanF, screenWidth/2 + 70, screenHeight/2 - 20);
+			batch.draw(vikingF, screenWidth/2 + 170, screenHeight/2 - 20);
 		}
 		
 		//Male characters
 		if(sex == "m")
 		{
-			batch.draw(pirateM, 50, 250);
-			batch.draw(royal_guardM, 150, 250);
-			batch.draw(samuraiM, 250, 250);
-			batch.draw(spartanM, 360, 250);
-			batch.draw(vikingM, 460, 250);
+			batch.draw(pirateM, screenWidth/2 - 220, screenHeight/2 - 20);
+			batch.draw(royal_guardM, screenWidth/2 - 110, screenHeight/2 - 20);
+			batch.draw(samuraiM, screenWidth/2 - 25, screenHeight/2 - 20);
+			batch.draw(spartanM, screenWidth/2 + 70, screenHeight/2 - 20);
+			batch.draw(vikingM, screenWidth/2 + 180, screenHeight/2 - 20);
 		}
 		
 		//Take input for class selection
@@ -394,9 +395,7 @@ public class Game extends ApplicationAdapter{
 	public void fadeAndFlash(Text text)
 	{
 		Text temp = new Text(text.returnText(), text.returnX(), text.returnY());
-
 		temp.fadeAndFlash(text.returnText());
-
 		font.draw(batch, temp.returnText(), temp.returnX(), temp.returnY());
 	}
 	
@@ -408,6 +407,7 @@ public class Game extends ApplicationAdapter{
 		{
 			char temp = sex.charAt(0); //Convert the string to char cause i was dumb
 			p1 = new Player(paramX, paramY, temp, player_class);
+			p1.setBatch(batch);
 			isCharacterMade = true;
 		}
 

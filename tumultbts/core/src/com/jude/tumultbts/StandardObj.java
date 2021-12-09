@@ -1,5 +1,7 @@
 package com.jude.tumultbts;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 public class StandardObj {
 
 	protected String playerClass;
@@ -9,6 +11,8 @@ public class StandardObj {
 	protected int width, height;
 
 	protected StandardChar pClassObj;
+
+	protected SpriteBatch batch;
 
 	//**************************************************************Position**************************************************************
 	
@@ -45,5 +49,12 @@ public class StandardObj {
 	public void setClass(String c)
 	{
 		playerClass = c;
+	}
+
+	//**************************************************************Misc**************************************************************
+
+	public void setBatch(SpriteBatch b)
+	{
+		batch = b;
 	}
 }
