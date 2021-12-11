@@ -2,7 +2,7 @@ package com.jude.tumultbts;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-public class StandardObj {
+public abstract class StandardObj {
 
 	protected String playerClass;
 

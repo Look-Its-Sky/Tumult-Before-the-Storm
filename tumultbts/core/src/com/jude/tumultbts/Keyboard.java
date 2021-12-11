@@ -2,6 +2,7 @@ package com.jude.tumultbts;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 
 /*
 NOTE:
@@ -46,6 +47,7 @@ public class Keyboard
 	}
 
 	//Just so my thread looks cleaner im messing around with it a lot
+	@Deprecated
 	public String checkForInput(String mode)
 	{
 		currentInput = "";

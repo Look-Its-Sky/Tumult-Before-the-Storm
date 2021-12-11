@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
+import java.awt.geom.Area;
 import java.util.ArrayList;
 
 public class Game extends ApplicationAdapter{

@@ -1,34 +1,45 @@
 package com.jude.tumultbts;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
-import java.util.*;
 
 public class Player extends StandardObj implements InputProcessor{
 
+	//Anim Frame Counting
 	private int animCounter;
 	private int animSpeed;
 	private int animSpeedCount;
 
+	//Speed of Player
 	private final int speed = 2;
 
+	//Debug mode
 	private final boolean isDebug = false;
 
+	//Player actions
 	private boolean isVisible;
 	private boolean isUp;
 	private boolean isDown;
 	private boolean isLeft;
 	private boolean isRight;
+	private boolean isNoDirection;
+	private boolean isLightAttack;
+	private boolean isHeavyAttack;
+	private boolean isDodge;
 
-	private Keyboard keyboard;
-
+	//Deprecated - what is the player doing
 	private String state;
+
+	//Determines whether or not if the player is in RPG or fighting mode
 	private String mode;
 
-	private Thread t;
-
+	//What animation should be playing
 	private ArrayList<Texture> currentAnim;
+
+	//Input stuff
 
 	public Player(int paramX, int paramY, char gender, String pClass)
 	{
@@ -43,10 +54,12 @@ public class Player extends StandardObj implements InputProcessor{
 		animSpeed = 20;
 
 		pClassObj = new StandardChar(gender, pClass);
-		keyboard = new Keyboard();
 
 		state = "idle";
 		currentAnim = returnIdleAnim(); //Set default anim
+
+		//Get input
+		updateInput();
 
 		//TODO: Set stats
 		switch(pClass)
@@ -109,22 +122,26 @@ public class Player extends StandardObj implements InputProcessor{
 
 	//Everything related to counting frames
 
+	//Manually reset anim
 	public void resetAnimCounter()
 	{
 		animCounter = 0;
 		if(isDebug) System.out.println("Anim Reset");
 	}
 
+	//What is the animcounter on
 	public int returnAnimCounter()
 	{
 		return animCounter;
 	}
 
+	//Go to next frame
 	private void nextFrame()
 	{
 		animCounter++;
 	}
 
+	//Go back a frame
 	private void prevFrame()
 	{
 		animCounter--;
@@ -140,7 +157,7 @@ public class Player extends StandardObj implements InputProcessor{
 		}
 	}
 
-	//Set the state of the player
+	//Deprecated - Set the state of the player
 	public void setState(String s)
 	{
 		switch(s)
@@ -166,7 +183,7 @@ public class Player extends StandardObj implements InputProcessor{
 		}
 	}
 
-	//Returns correct texture for current animation
+	//Returns correct texture for current animation -- doesnt work yet
 	public Texture renderPlayer()
 	{
 		switch(state)
@@ -188,17 +205,7 @@ public class Player extends StandardObj implements InputProcessor{
 		return returnIdleAnim().get(0);
 	}
 
-	//Should be fine for a fixed number of players and npcs
-	public void enableInput()
-	{
-		if(t == null || !t.isAlive()) t.start();
-	}
-
-	public void disableInput()
-	{
-		if(t.isAlive()) t.stop();
-	}
-
+	//Mode setting
 	public void setMode(String m)
 	{
 		if(m != "fighting" || m != "rpg")
@@ -222,10 +229,35 @@ public class Player extends StandardObj implements InputProcessor{
 		mode = "fight";
 	}
 
+	//Position stuff
 	public void updatePos()
 	{
+		if(isRight)
+		{
+			x += speed;
+		}
+
+		if(isLeft)
+		{
+			x -= speed;
+		}
+
+		if(isDown)
+		{
+			y -= speed;
+		}
+
+		if(isUp)
+		{
+			y += speed;
+		}
+	}
+
+	//Input stuff
+	public void updateInput()
+	{
+		//First Attempt
 		/*
-		First attempt
 		switch (keyboard.checkForInput(mode))
 		{
 			case "left":
@@ -260,8 +292,8 @@ public class Player extends StandardObj implements InputProcessor{
 		}
 		*/
 
-		//Second attempt
-
+		//Second Attempt
+		/*
 		isDown = false;
 		isUp = false;
 		isLeft = false;
@@ -310,18 +342,67 @@ public class Player extends StandardObj implements InputProcessor{
 		if(isDown) y -= speed;
 		if(isLeft) x -= speed;
 		if(isRight) x += speed;
+		 */
+
+		//Third attempt
+		/*
+		Gdx.input.setInputProcessor(new InputAdapter()
+		{
+			@Override
+			public boolean keyTyped(char key) {
+				if(key == 'w')
+				{
+					isUp = true;
+					isDown = false;
+				}
+
+				if(key == 'a')
+				{
+					isLeft = true;
+					isRight = false;
+				}
+
+				if(key == 'd')
+				{
+					isRight = true;
+					isLeft = false;
+				}
+
+				if(key == 's')
+				{
+					isDown = true;
+					isUp = false;
+				}
+
+				return true;
+			}
+
+			@Override
+			public boolean keyUp(char key)
+			{
+				if (key == 'a') isLeft = false;
+				if (key == 's') isDown = false;
+				if (key == 'd') isRight = false;
+				if (key == 'w') isUp = false;
+
+				return true;
+			}
+		});
+
+		 */
 	}
+
 
 	//Helps to ease the speed of the frames switching
 	private boolean shouldFrameRender()
 	{
 		//So we dont overrun the int limit and crash which would be very bad
-		if(animSpeedCount + 1 > 2147483647) animSpeedCount = 0;
+		if (animSpeedCount + 1 > 2147483647) animSpeedCount = 0;
 		animSpeedCount++;
 
-		if(animSpeedCount %animSpeed == 1)
+		if (animSpeedCount % animSpeed == 1)
 		{
-			if(isDebug) System.out.println(animSpeedCount);
+			if (isDebug) System.out.println(animSpeedCount);
 			return true;
 		}
 
@@ -332,6 +413,80 @@ public class Player extends StandardObj implements InputProcessor{
 	}
 
 
+	@Override
+	public boolean keyDown(int keycode)
+	{
+		if(keycode == Input.Keys.W)
+		{
+			isUp = true;
+			isDown = false;
+		}
 
+		if(keycode == Input.Keys.A)
+		{
+			isLeft = true;
+			isRight = false;
+		}
 
+		if(keycode == Input.Keys.D)
+		{
+			isRight = true;
+			isLeft = false;
+		}
+
+		if(keycode == Input.Keys.S)
+		{
+			isDown = true;
+			isUp = false;
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean keyUp(int keycode)
+	{
+		if (keycode == Input.Keys.A) isLeft = false;
+		if (keycode == Input.Keys.S) isDown = false;
+		if (keycode == Input.Keys.D) isRight = false;
+		if (keycode == Input.Keys.W) isUp = false;
+
+		return true;
+	}
+
+	@Override
+	public boolean keyTyped(char key)
+	{
+		return true;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY)
+	{
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(float amountX, float amountY)
+	{
+		return false;
+	}
 }
