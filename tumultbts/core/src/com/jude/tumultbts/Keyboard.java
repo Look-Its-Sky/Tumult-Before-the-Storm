@@ -12,6 +12,7 @@ I ABSOLUTELY HATE IT
 ILL WRITE MY OWN UNIVERSAL KEYBOARD CLASS ONE DAY
  */
 
+//This whole class is Deprecated
 public class Keyboard
 {
 	private String currentInput;
@@ -24,13 +25,13 @@ public class Keyboard
 	private final int j = Input.Keys.J;
 	private final int k = Input.Keys.K;
 
-	//Light Attacks
+	//Light Attacks - Deprecated
 	private final String nlight = String.valueOf(j);
 	private final String slightl = String.valueOf(LEFT + " " + j);
 	private final String slightr = String.valueOf(RIGHT + " " + j);
 	private final String dlight = String.valueOf(DOWN + " " + j);
 
-	//Heavy Attacks
+	//Heavy Attacks - Deprecated
 	private final String nheavy = String.valueOf(k);
 	private final String sheavyl = String.valueOf(LEFT + " " + k);
 	private final String sheavyr = String.valueOf(RIGHT + " " + k);

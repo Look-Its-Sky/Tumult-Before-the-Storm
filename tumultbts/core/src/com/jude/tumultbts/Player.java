@@ -2,11 +2,11 @@ package com.jude.tumultbts;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
+import com.badlogic.gdx.InputAdapter;
 
-public class Player extends StandardObj implements InputProcessor{
+public class Player extends StandardObj{
 
 	//Anim Frame Counting
 	private int animCounter;
@@ -61,24 +61,8 @@ public class Player extends StandardObj implements InputProcessor{
 		//Get input
 		updateInput();
 
-		//TODO: Set stats
-		switch(pClass)
-		{
-			case "pirate":
-				break;
-
-			case "royal_guard":
-				break;
-
-			case "samurai":
-				break;
-
-			case "spartan":
-				break;
-
-			case "viking":
-				break;
-		}
+		//Set States
+		setStats(pClass);
 	}
 
 
@@ -119,6 +103,28 @@ public class Player extends StandardObj implements InputProcessor{
 		return pClassObj.returnHitAnim();
 	}
 
+	//Stats
+	private void setStats(String pClass)
+	{
+		//TODO: Set stats
+		switch(pClass)
+		{
+			case "pirate":
+				break;
+
+			case "royal_guard":
+				break;
+
+			case "samurai":
+				break;
+
+			case "spartan":
+				break;
+
+			case "viking":
+				break;
+		}
+	}
 
 	//Everything related to counting frames
 
@@ -202,7 +208,7 @@ public class Player extends StandardObj implements InputProcessor{
 				break;
 		}
 
-		return returnIdleAnim().get(0);
+		return currentAnim.get(animCounter);
 	}
 
 	//Mode setting
@@ -344,10 +350,11 @@ public class Player extends StandardObj implements InputProcessor{
 		if(isRight) x += speed;
 		 */
 
-		//Third attempt
-		/*
+		//Third attempt - Works
 		Gdx.input.setInputProcessor(new InputAdapter()
 		{
+			//First Attempt of the third attempt
+			/*
 			@Override
 			public boolean keyTyped(char key) {
 				if(key == 'w')
@@ -388,8 +395,86 @@ public class Player extends StandardObj implements InputProcessor{
 				return true;
 			}
 		});
+		*/
 
-		 */
+			//Second Attempt of the Third Attempt
+			@Override
+			public boolean keyDown(int keycode)
+			{
+				if(keycode == Input.Keys.W)
+				{
+					isUp = true;
+					isDown = false;
+				}
+
+				if(keycode == Input.Keys.A)
+				{
+					isLeft = true;
+					isRight = false;
+				}
+
+				if(keycode == Input.Keys.D)
+				{
+					isRight = true;
+					isLeft = false;
+				}
+
+				if(keycode == Input.Keys.S)
+				{
+					isDown = true;
+					isUp = false;
+				}
+
+				return true;
+			}
+
+			@Override
+			public boolean keyUp(int keycode)
+			{
+				if (keycode == Input.Keys.A) isLeft = false;
+				if (keycode == Input.Keys.S) isDown = false;
+				if (keycode == Input.Keys.D) isRight = false;
+				if (keycode == Input.Keys.W) isUp = false;
+
+				return true;
+			}
+
+			@Override
+			public boolean keyTyped(char key)
+			{
+				return true;
+			}
+
+			@Override
+			public boolean touchDown(int screenX, int screenY, int pointer, int button)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean touchUp(int screenX, int screenY, int pointer, int button)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean touchDragged(int screenX, int screenY, int pointer)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean mouseMoved(int screenX, int screenY)
+			{
+				return false;
+			}
+
+			@Override
+			public boolean scrolled(float amountX, float amountY)
+			{
+				return false;
+			}
+		});
 	}
 
 
@@ -412,81 +497,4 @@ public class Player extends StandardObj implements InputProcessor{
 		}
 	}
 
-
-	@Override
-	public boolean keyDown(int keycode)
-	{
-		if(keycode == Input.Keys.W)
-		{
-			isUp = true;
-			isDown = false;
-		}
-
-		if(keycode == Input.Keys.A)
-		{
-			isLeft = true;
-			isRight = false;
-		}
-
-		if(keycode == Input.Keys.D)
-		{
-			isRight = true;
-			isLeft = false;
-		}
-
-		if(keycode == Input.Keys.S)
-		{
-			isDown = true;
-			isUp = false;
-		}
-
-		return true;
-	}
-
-	@Override
-	public boolean keyUp(int keycode)
-	{
-		if (keycode == Input.Keys.A) isLeft = false;
-		if (keycode == Input.Keys.S) isDown = false;
-		if (keycode == Input.Keys.D) isRight = false;
-		if (keycode == Input.Keys.W) isUp = false;
-
-		return true;
-	}
-
-	@Override
-	public boolean keyTyped(char key)
-	{
-		return true;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY)
-	{
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(float amountX, float amountY)
-	{
-		return false;
-	}
 }
