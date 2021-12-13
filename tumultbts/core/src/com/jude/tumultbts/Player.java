@@ -30,16 +30,16 @@ public class Player extends StandardObj{
 	private boolean isHeavyAttack;
 	private boolean isDodge;
 
-	//Deprecated - what is the player doing
+	//What is the player doing
 	private String state;
+	private String[] temp_curr, temp_prev;
 
 	//Determines whether or not if the player is in RPG or fighting mode
 	private String mode;
 
 	//What animation should be playing
 	private ArrayList<Texture> currentAnim;
-
-	//Input stuff
+	private boolean noAnimChange;
 
 	public Player(int paramX, int paramY, char gender, String pClass)
 	{
@@ -57,12 +57,21 @@ public class Player extends StandardObj{
 
 		state = "idle";
 		currentAnim = returnIdleAnim(); //Set default anim
+		noAnimChange = true;
 
 		//Get input
 		updateInput();
 
 		//Set States
 		setStats(pClass);
+
+		/*
+		Temp Movement
+		Verticle inputs are always the first slot
+		Horizontal inputs are always the second slot
+		*/
+		temp_prev = new String[2];
+		temp_curr = new String[2];
 	}
 
 
@@ -163,7 +172,7 @@ public class Player extends StandardObj{
 		}
 	}
 
-	//Deprecated - Set the state of the player
+	//Set the state of the player
 	public void setState(String s)
 	{
 		switch(s)
@@ -192,6 +201,9 @@ public class Player extends StandardObj{
 	//Returns correct texture for current animation -- doesnt work yet
 	public Texture renderPlayer()
 	{
+		//Check if the character should be idle
+		if(!isRight && !isLeft && !isUp && !isDown) state = "idle";
+
 		switch(state)
 		{
 			case "idle":
@@ -207,6 +219,10 @@ public class Player extends StandardObj{
 				System.err.println("Error in Rendering Player");
 				break;
 		}
+
+		//Frame counting stuff
+		autoResetAnimCounter();
+		if(noAnimChange && shouldFrameRender()) nextFrame();
 
 		return currentAnim.get(animCounter);
 	}
@@ -401,6 +417,14 @@ public class Player extends StandardObj{
 			@Override
 			public boolean keyDown(int keycode)
 			{
+				//Set previous inputs
+
+				if(isUp) temp_prev[0] = "up";
+				else if(isDown) temp_prev[0] = "down";
+
+				if(isRight) temp_prev[1] = "right";
+				else if(isLeft) temp_prev[1] = "left";
+
 				if(keycode == Input.Keys.W)
 				{
 					isUp = true;
@@ -425,16 +449,43 @@ public class Player extends StandardObj{
 					isUp = false;
 				}
 
+				//Set current input
+				if(isUp) temp_curr[0] = "up";
+				if(isDown) temp_curr[0] = "down";
+				if(isRight) temp_curr[1] = "right";
+				if(isLeft) temp_curr[1] = "left";
+
+				//Check if the animation shouldnt be changed
+				if(temp_curr[0] == temp_prev[0] && temp_curr[1] == temp_prev[1]) noAnimChange = true;
+
+				//Check if the character is running
+				if(temp_curr[0] == "up" || temp_curr[0] == "down" || temp_curr[1] == "right" || temp_curr[1] == "left") state = "run";
+
 				return true;
 			}
 
 			@Override
 			public boolean keyUp(int keycode)
 			{
-				if (keycode == Input.Keys.A) isLeft = false;
-				if (keycode == Input.Keys.S) isDown = false;
-				if (keycode == Input.Keys.D) isRight = false;
-				if (keycode == Input.Keys.W) isUp = false;
+				if (keycode == Input.Keys.A)
+				{
+					isLeft = false;
+				}
+
+				if (keycode == Input.Keys.S)
+				{
+					isDown = false;
+				}
+
+				if (keycode == Input.Keys.D)
+				{
+					isRight = false;
+				}
+
+				if (keycode == Input.Keys.W)
+				{
+					isUp = false;
+				}
 
 				return true;
 			}
@@ -485,15 +536,29 @@ public class Player extends StandardObj{
 		if (animSpeedCount + 1 > 2147483647) animSpeedCount = 0;
 		animSpeedCount++;
 
-		if (animSpeedCount % animSpeed == 1)
+		switch(state)
 		{
-			if (isDebug) System.out.println(animSpeedCount);
-			return true;
-		}
+			case "idle":
+				if(animSpeedCount % animSpeed == 0)
+				{
+					if (isDebug) System.out.println(animSpeedCount);
+					return true;
+				}
 
-		else
-		{
-			return false;
+				else return false;
+
+			case "run":
+				if(animSpeedCount % animSpeed/4 == 0)
+				{
+					if (isDebug) System.out.println(animSpeedCount);
+					return true;
+				}
+
+				else return false;
+
+			default:
+				if(isDebug) System.err.println("Error in Determining Frame");
+				return false;
 		}
 	}
 
