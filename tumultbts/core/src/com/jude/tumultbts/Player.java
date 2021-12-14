@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Player extends StandardObj{
 
@@ -29,6 +30,7 @@ public class Player extends StandardObj{
 	private boolean isLightAttack;
 	private boolean isHeavyAttack;
 	private boolean isDodge;
+	private boolean isFlipX;
 
 	//What is the player doing
 	private String state;
@@ -51,13 +53,13 @@ public class Player extends StandardObj{
 
 		animCounter = 0;
 		animSpeedCount = 0;
-		animSpeed = 20;
 
 		pClassObj = new StandardChar(gender, pClass);
 
 		state = "idle";
 		currentAnim = returnIdleAnim(); //Set default anim
 		noAnimChange = true;
+		isFlipX = false;
 
 		//Get input
 		updateInput();
@@ -201,10 +203,12 @@ public class Player extends StandardObj{
 	//Returns correct texture for current animation -- doesnt work yet
 	public Texture renderPlayer()
 	{
+		//Check previous value of state
+		String prev_state = state;
+
 		//Check if the character should be idle
 		if(!isRight && !isLeft && !isUp && !isDown) state = "idle";
-
-		switch(state)
+		switch (state)
 		{
 			case "idle":
 				currentAnim = returnIdleAnim();
@@ -220,11 +224,24 @@ public class Player extends StandardObj{
 				break;
 		}
 
-		//Frame counting stuff
-		autoResetAnimCounter();
-		if(noAnimChange && shouldFrameRender()) nextFrame();
+		if(prev_state != state)
+		{
+			resetAnimCounter();
+		}
 
-		return currentAnim.get(animCounter);
+		else
+		{
+			//Frame counting stuff
+			autoResetAnimCounter();
+			if(noAnimChange && shouldFrameRender()) nextFrame();
+		}
+
+		if(isFlipX)
+		{
+			System.out.println(isFlipX);
+			return flip(currentAnim.get(animCounter));
+		}
+		else return currentAnim.get(animCounter);
 	}
 
 	//Mode setting
@@ -257,11 +274,13 @@ public class Player extends StandardObj{
 		if(isRight)
 		{
 			x += speed;
+			isFlipX = false;
 		}
 
 		if(isLeft)
 		{
 			x -= speed;
+			isFlipX = true;
 		}
 
 		if(isDown)
@@ -539,7 +558,7 @@ public class Player extends StandardObj{
 		switch(state)
 		{
 			case "idle":
-				if(animSpeedCount % animSpeed == 0)
+				if(animSpeedCount % 20 == 0)
 				{
 					if (isDebug) System.out.println(animSpeedCount);
 					return true;
@@ -548,7 +567,7 @@ public class Player extends StandardObj{
 				else return false;
 
 			case "run":
-				if(animSpeedCount % animSpeed/4 == 0)
+				if(animSpeedCount %10 == 0)
 				{
 					if (isDebug) System.out.println(animSpeedCount);
 					return true;
@@ -562,4 +581,11 @@ public class Player extends StandardObj{
 		}
 	}
 
+	//Flips a texture and returns its
+	private Texture flip(Texture t)
+	{
+		Sprite sprite = new Sprite(t);
+		sprite.flip(true, false);
+		return sprite.getTexture();
+	}
 }
