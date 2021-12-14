@@ -12,8 +12,6 @@ public abstract class StandardObj {
 
 	protected StandardChar pClassObj;
 
-	protected SpriteBatch batch;
-
 	//**************************************************************Position**************************************************************
 	
 	public void changePos(int paramX, int paramY)
@@ -52,9 +50,4 @@ public abstract class StandardObj {
 	}
 
 	//**************************************************************Misc**************************************************************
-
-	public void setBatch(SpriteBatch b)
-	{
-		batch = b;
-	}
 }

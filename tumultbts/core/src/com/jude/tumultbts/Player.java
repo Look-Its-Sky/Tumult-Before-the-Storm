@@ -17,6 +17,9 @@ public class Player extends StandardObj{
 	//Speed of Player
 	private final int speed = 2;
 
+	//Use character to print coords
+	private final boolean coord_mode = true;
+
 	//Debug mode
 	private final boolean isDebug = false;
 
@@ -45,9 +48,6 @@ public class Player extends StandardObj{
 
 	public Player(int paramX, int paramY, char gender, String pClass)
 	{
-		width = 50;
-		height = 50;
-
 		x = paramX;
 		y = paramY;
 
@@ -63,6 +63,34 @@ public class Player extends StandardObj{
 
 		//Get input
 		updateInput();
+
+		//Set States
+		setStats(pClass);
+
+		/*
+		Temp Movement
+		Verticle inputs are always the first slot
+		Horizontal inputs are always the second slot
+		*/
+		temp_prev = new String[2];
+		temp_curr = new String[2];
+	}
+
+	//NPC Class only
+	public Player(int paramX, int paramY, char gender, String pClass, ArrayList<String> dialogue)
+	{
+		x = paramX;
+		y = paramY;
+
+		animCounter = 0;
+		animSpeedCount = 0;
+
+		pClassObj = new StandardChar(gender, pClass);
+
+		state = "idle";
+		currentAnim = returnIdleAnim(); //Set default anim
+		noAnimChange = true;
+		isFlipX = false;
 
 		//Set States
 		setStats(pClass);
@@ -121,18 +149,28 @@ public class Player extends StandardObj{
 		switch(pClass)
 		{
 			case "pirate":
+				width = 85;
+				height = 85;
 				break;
 
 			case "royal_guard":
+				width = 75;
+				height = 75;
 				break;
 
 			case "samurai":
+				width = 85;
+				height = 85;
 				break;
 
 			case "spartan":
+				width = 85;
+				height = 85;
 				break;
 
 			case "viking":
+				width = 75;
+				height = 75;
 				break;
 		}
 	}
@@ -236,12 +274,7 @@ public class Player extends StandardObj{
 			if(noAnimChange && shouldFrameRender()) nextFrame();
 		}
 
-		if(isFlipX)
-		{
-			System.out.println(isFlipX);
-			return flip(currentAnim.get(animCounter));
-		}
-		else return currentAnim.get(animCounter);
+		return currentAnim.get(animCounter);
 	}
 
 	//Mode setting
@@ -274,13 +307,13 @@ public class Player extends StandardObj{
 		if(isRight)
 		{
 			x += speed;
-			isFlipX = false;
+			isFlipX = true;
 		}
 
 		if(isLeft)
 		{
 			x -= speed;
-			isFlipX = true;
+			isFlipX = false;
 		}
 
 		if(isDown)
@@ -297,142 +330,8 @@ public class Player extends StandardObj{
 	//Input stuff
 	public void updateInput()
 	{
-		//First Attempt
-		/*
-		switch (keyboard.checkForInput(mode))
-		{
-			case "left":
-				state = "run";
-				x -= speed;
-				break;
-
-			case "right":
-				state = "run";
-				x += speed;
-				break;
-
-			case "up":
-				if (mode == "rpg")
-				{
-					state = "run";
-					y += speed;
-				}
-				break;
-
-			case "down":
-				if (mode == "rpg")
-				{
-					state = "run";
-					y -= speed;
-				}
-				break;
-
-			default:
-				state = "idle";
-				break;
-		}
-		*/
-
-		//Second Attempt
-		/*
-		isDown = false;
-		isUp = false;
-		isLeft = false;
-		isRight = false;
-
-		//Check to see inputs
-		if(keyboard.checkForInput(mode) == "left")
-		{
-			state = "run";
-			isLeft = true;
-			isRight = false;
-		}
-
-		if(keyboard.checkForInput(mode) == "right")
-		{
-			state = "run";
-			isRight = true;
-			isLeft = false;
-		}
-
-		if(keyboard.checkForInput(mode) == "up")
-		{
-			state = "run";
-			isUp = true;
-			isDown = false;
-		}
-
-		if(keyboard.checkForInput(mode) == "down")
-		{
-			state = "run";
-			isDown = true;
-			isUp = false;
-		}
-
-		if(keyboard.checkForInput(mode) == "")
-		{
-			state = "idle	";
-			isDown = false;
-			isUp = false;
-			isLeft = false;
-			isRight = false;
-		}
-
-		//Actually implementing the actions
-		if(isUp) y += speed;
-		if(isDown) y -= speed;
-		if(isLeft) x -= speed;
-		if(isRight) x += speed;
-		 */
-
-		//Third attempt - Works
 		Gdx.input.setInputProcessor(new InputAdapter()
 		{
-			//First Attempt of the third attempt
-			/*
-			@Override
-			public boolean keyTyped(char key) {
-				if(key == 'w')
-				{
-					isUp = true;
-					isDown = false;
-				}
-
-				if(key == 'a')
-				{
-					isLeft = true;
-					isRight = false;
-				}
-
-				if(key == 'd')
-				{
-					isRight = true;
-					isLeft = false;
-				}
-
-				if(key == 's')
-				{
-					isDown = true;
-					isUp = false;
-				}
-
-				return true;
-			}
-
-			@Override
-			public boolean keyUp(char key)
-			{
-				if (key == 'a') isLeft = false;
-				if (key == 's') isDown = false;
-				if (key == 'd') isRight = false;
-				if (key == 'w') isUp = false;
-
-				return true;
-			}
-		});
-		*/
-
-			//Second Attempt of the Third Attempt
 			@Override
 			public boolean keyDown(int keycode)
 			{
@@ -505,6 +404,8 @@ public class Player extends StandardObj{
 				{
 					isUp = false;
 				}
+
+				if(keycode == Input.Keys.SPACE && coord_mode) System.out.println("\nX: " + x + "\nY: " + y);
 
 				return true;
 			}
@@ -581,11 +482,19 @@ public class Player extends StandardObj{
 		}
 	}
 
-	//Flips a texture and returns its
-	private Texture flip(Texture t)
+	//Returns original dimensions of the images
+	public int returnOrigH()
 	{
-		Sprite sprite = new Sprite(t);
-		sprite.flip(true, false);
-		return sprite.getTexture();
+		return currentAnim.get(animCounter).getHeight();
+	}
+
+	public int returnOrigW()
+	{
+		return currentAnim.get(animCounter).getWidth();
+	}
+
+	public boolean returnIsFlipX()
+	{
+		return isFlipX;
 	}
 }

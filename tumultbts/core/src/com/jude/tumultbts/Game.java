@@ -3,10 +3,8 @@ package com.jude.tumultbts;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.FileTextureData;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
@@ -20,6 +18,8 @@ public class Game extends ApplicationAdapter{
 	private int cutscene, area;
 	private int whereIsCursor;
 	private int screenHeight, screenWidth;
+
+	private float when; //Where the player is at during the game
 	
 	private boolean isMenuOpen; //Note: this refers to in game
 	private boolean isInGame;
@@ -45,7 +45,12 @@ public class Game extends ApplicationAdapter{
 	
 	private Player p1;
 	private Player p2; //Possibly
-	private Player npc;
+
+	private NPC npc1;
+	private boolean isNPCInit;
+
+	//Test Characters
+	private ArrayList<Player> test;
 
 	private Text gtemp;
 	
@@ -53,17 +58,8 @@ public class Game extends ApplicationAdapter{
 	private final int[] p1DefaultFightingPos = {100,100};
 	private final int[] p2DefaultFightingPos = {500,500};
 
-	/*
-	Fade isnt saving because the objects go out of scope before fade can be added to make a visible text
+	private final boolean isHeightTest = false;
 
-	Some solutions:
-	Make an arrayList to handle temporaries and memory manage myself ie: set clean the arraylist after every "scene" -- the option im going to do
-	Make global variables for EVERY text and use so much ram itll put Google Chrome to shame
-	Completely rewrite everything -- Probably the best option but i dont have the time or patience
-	 */
-	
-	
-	
 	/*
 	 * Gamestate notes
 	 * 
@@ -122,6 +118,20 @@ public class Game extends ApplicationAdapter{
 		isCharacterMade = false;
 
 		temp = new ArrayList<Text>(); //A arraylist for handling all text scene by scene
+
+		if(isHeightTest)
+		{
+			//Height test
+			char sex = 'm';
+
+			test = new ArrayList<Player>();
+
+			test.add(new Player(100,100, sex, "pirate"));
+			test.add(new Player(100,100, sex, "royal_guard"));
+			test.add(new Player(100,100, sex, "samurai"));
+			test.add(new Player(100,100, sex, "spartan"));
+			test.add(new Player(100,100, sex, "viking"));
+		}
 	}
 
 	//**************************************************************Graphics**************************************************************
@@ -341,6 +351,11 @@ public class Game extends ApplicationAdapter{
 
 		mode = "rpg";
 
+		if(when == 0)
+		{
+			if(!isNPCInit) npc1 = new NPC()
+		}
+
 		//Set bounds
 		//TODO: need boundary code for the starting area
 	}
@@ -408,13 +423,21 @@ public class Game extends ApplicationAdapter{
 		{
 			char temp = sex.charAt(0); //Convert the string to char cause i was dumb
 			p1 = new Player(paramX, paramY, temp, player_class);
-			p1.setBatch(batch);
 			isCharacterMade = true;
 		}
 
 			//TODO: Add Fighting mode to drawing
 			p1.updatePos();
-			batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY());
+			batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW(), p1.returnOrigH(), p1.returnIsFlipX(), false);
+
+			//Height Test
+			if(isHeightTest)
+			{
+				for(int i = 0; i < test.size(); i++)
+				{
+					batch.draw(test.get(i).renderPlayer(), test.get(i).returnX() + 50 * i, test.get(i).returnY(), test.get(i).returnW(), test.get(i).returnH());
+				}
+			}
 
 			//Set Mode
 			if(mode == "rpg") p1.toggleRPG();
