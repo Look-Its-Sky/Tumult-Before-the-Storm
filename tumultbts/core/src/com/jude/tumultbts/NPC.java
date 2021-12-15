@@ -1,5 +1,7 @@
 package com.jude.tumultbts;
 
+import com.badlogic.gdx.graphics.Texture;
+
 import java.util.ArrayList;
 
 public class NPC extends Player{
@@ -12,4 +14,5 @@ public class NPC extends Player{
 
         textCounter = 0;
     }
+
 }

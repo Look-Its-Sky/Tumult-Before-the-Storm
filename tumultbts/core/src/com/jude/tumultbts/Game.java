@@ -353,11 +353,27 @@ public class Game extends ApplicationAdapter{
 
 		if(when == 0)
 		{
-			if(!isNPCInit) npc1 = new NPC()
+			if(!isNPCInit)
+			{
+				ArrayList<String> temp = new ArrayList<String>();
+				temp.add("Testing testing");
+
+				npc1 = new NPC(383,505, 'f', "pirate", temp);
+			}
+		}
+
+		//Check for interactions with NPCS
+		if(Gdx.input.isButtonPressed(Input.Keys.E) && interact(p1, npc1))
+		{
+			System.out.println("Works");
 		}
 
 		//Set bounds
 		//TODO: need boundary code for the starting area
+
+
+		//Render all NPCs
+		batch.draw(npc1.renderPlayer(), npc1.returnX(), npc1.returnY(), npc1.returnW(), npc1.returnH());
 	}
 
 	//**************************************************************Save States**************************************************************
@@ -427,6 +443,7 @@ public class Game extends ApplicationAdapter{
 		}
 
 			//TODO: Add Fighting mode to drawing
+
 			p1.updatePos();
 			batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW(), p1.returnOrigH(), p1.returnIsFlipX(), false);
 
@@ -453,4 +470,19 @@ public class Game extends ApplicationAdapter{
 	}
 
 	//**************************************************************Misc**************************************************************
+
+	//Checks if characters can interact with NPC
+	public boolean interact(Player p, NPC n)
+	{
+		if(p.returnX() + 15 > n.returnX() - 15 && p.returnX() - p.returnW() - 15 < n.returnX())
+		{
+			System.out.println("X");
+			if(p.returnY() + p.returnH() > n.returnY() - 15 && p.returnY() < n.returnY() + n.returnH())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
 }

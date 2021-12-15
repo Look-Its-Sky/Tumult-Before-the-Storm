@@ -7,8 +7,6 @@ import com.jude.tumultbts.Game;
 
 public class DesktopLauncher {
 
-	//only supports my school laptop resolution for now
-
 	/*
 	 private static final int width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
 	 private static final int length = LwjglApplicationConfiguration.getDesktopDisplayMode().length;
@@ -23,9 +21,18 @@ public class DesktopLauncher {
 		//Window settings
 		config.title = "Tumult: Before the Storm";
 		config.resizable = false;
+		/*
+		Fullscreen is still in development default to 720p
+
 		config.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
 		config.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;
+
 		config.fullscreen = true;
+		*/
+
+		config.width = 1280;
+		config.height = 720;
+
 		config.foregroundFPS = 60;
 
 		new LwjglApplication(new Game(), config);
