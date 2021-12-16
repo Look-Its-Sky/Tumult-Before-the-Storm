@@ -474,15 +474,13 @@ public class Game extends ApplicationAdapter{
 	//Checks if characters can interact with NPC
 	public boolean interact(Player p, NPC n)
 	{
-		if(p.returnX() + 15 > n.returnX() - 15 && p.returnX() - p.returnW() - 15 < n.returnX())
+		//Collision for X assuming it starts drawing from top left corner
+		if()
 		{
-			System.out.println("X");
-			if(p.returnY() + p.returnH() > n.returnY() - 15 && p.returnY() < n.returnY() + n.returnH())
-			{
-				return true;
-			}
+
 		}
 
+		//No collision
 		return false;
 	}
 }
