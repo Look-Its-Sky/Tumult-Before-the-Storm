@@ -173,6 +173,7 @@ public class Game extends ApplicationAdapter{
 				//loadFromSave();
 				loadWorld();
 				initiatePlayer(100, 100); //Change this eventually its just for testing
+				initiateRPGNPC();
 				break;
 				
 			default:
@@ -362,18 +363,6 @@ public class Game extends ApplicationAdapter{
 			}
 		}
 
-		//Check for interactions with NPCS
-		if(Gdx.input.isButtonPressed(Input.Keys.E) && interact(p1, npc1))
-		{
-			System.out.println("Works");
-		}
-
-		//Set bounds
-		//TODO: need boundary code for the starting area
-
-
-		//Render all NPCs
-		batch.draw(npc1.renderPlayer(), npc1.returnX(), npc1.returnY(), npc1.returnW(), npc1.returnH());
 	}
 
 	//**************************************************************Save States**************************************************************
@@ -424,7 +413,7 @@ public class Game extends ApplicationAdapter{
 		}
 	}
 
-	public void fadeAndFlash(Text text)
+	private void fadeAndFlash(Text text)
 	{
 		Text temp = new Text(text.returnText(), text.returnX(), text.returnY());
 		temp.fadeAndFlash(text.returnText());
@@ -433,7 +422,7 @@ public class Game extends ApplicationAdapter{
 	
 	//**************************************************************Characters**************************************************************
 	
-	public void initiatePlayer(int paramX, int paramY)
+	private void initiatePlayer(int paramX, int paramY)
 	{
 		if(!isCharacterMade)
 		{
@@ -464,20 +453,50 @@ public class Game extends ApplicationAdapter{
 	}
 
 	//For later use whenever I get fighting mode to work
-	public void initiateNPC()
+	private void initiateFightingNPC()
 	{
 
+	}
+
+	private void initiateRPGNPC()
+	{
+		int boundForgiveness = 15;
+
+		//Check for interactions with NPCS - TODO: remove hard code for a function that takes dynamic coords
+		if(p1.returnX() > 383 - boundForgiveness && p1.returnX() < 383 + boundForgiveness*2)
+		{
+			if(p1.returnY() > 505 - boundForgiveness && p1.returnY() < boundForgiveness*2)
+			{
+				if(Gdx.input.isButtonPressed(Input.Keys.E)) System.out.println("Works");
+			}
+		}
+
+		if(Gdx.input.isKeyPressed(Input.Keys.F)) System.out.println("\nPlayer X:" + p1.returnX() + "\nNPC X: " + npc1.returnX() + "\nPlayer Y: " + p1.returnY() + "\nNPC Y: " + npc1.returnY());
+
+		//Set bounds
+		//TODO: need boundary code for the starting area
+
+		//Render all NPCs
+		batch.draw(npc1.renderPlayer(), npc1.returnX(), npc1.returnY(), npc1.returnW(), npc1.returnH());
 	}
 
 	//**************************************************************Misc**************************************************************
 
 	//Checks if characters can interact with NPC
-	public boolean interact(Player p, NPC n)
+	private boolean interact(Player p, NPC n)
 	{
-		//Collision for X assuming it starts drawing from top left corner
-		if()
+		//Collision for X assuming it starts drawing from bottem left corner
+		if(p.returnX() + p.returnW() > n.returnX() && p.returnX() < n.returnX() + n.returnW())
 		{
+			System.out.println("X Collision works");
 
+			//Collision for Y
+			if(p.returnY() + p.returnH() > n.returnY() && p.returnY() < n.returnY() + n.returnH())
+			{
+				System.out.println("Y Collision Works");
+
+				return true;
+			}
 		}
 
 		//No collision
