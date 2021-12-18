@@ -463,6 +463,8 @@ public class Game extends ApplicationAdapter{
 		int boundForgiveness = 15;
 
 		//Check for interactions with NPCS - TODO: remove hard code for a function that takes dynamic coords
+
+		/*
 		if(p1.returnX() > 383 - boundForgiveness && p1.returnX() < 383 + boundForgiveness*2)
 		{
 			if(p1.returnY() > 505 - boundForgiveness && p1.returnY() < boundForgiveness*2)
@@ -470,6 +472,10 @@ public class Game extends ApplicationAdapter{
 				if(Gdx.input.isButtonPressed(Input.Keys.E)) System.out.println("Works");
 			}
 		}
+		 */
+
+		//Last resort
+
 
 		if(Gdx.input.isKeyPressed(Input.Keys.F)) System.out.println("\nPlayer X:" + p1.returnX() + "\nNPC X: " + npc1.returnX() + "\nPlayer Y: " + p1.returnY() + "\nNPC Y: " + npc1.returnY());
 
@@ -485,7 +491,7 @@ public class Game extends ApplicationAdapter{
 	//Checks if characters can interact with NPC
 	private boolean interact(Player p, NPC n)
 	{
-		//Collision for X assuming it starts drawing from bottem left corner
+		//Collision for X assuming it starts drawing from bottom left corner
 		if(p.returnX() + p.returnW() > n.returnX() && p.returnX() < n.returnX() + n.returnW())
 		{
 			System.out.println("X Collision works");
