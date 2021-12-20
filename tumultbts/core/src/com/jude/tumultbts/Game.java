@@ -46,6 +46,8 @@ public class Game extends ApplicationAdapter{
 	private Player p1;
 	private Player p2; //Possibly
 
+	private String player_orientation;
+
 	private NPC npc1;
 	private boolean isNPCInit;
 
@@ -118,6 +120,7 @@ public class Game extends ApplicationAdapter{
 		isCharacterMade = false;
 
 		temp = new ArrayList<Text>(); //A arraylist for handling all text scene by scene
+		player_orientation = "left";
 
 		if(isHeightTest)
 		{
@@ -436,6 +439,9 @@ public class Game extends ApplicationAdapter{
 			p1.updatePos();
 			batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW(), p1.returnOrigH(), p1.returnIsFlipX(), false);
 
+			if(p1.returnIsFlipX()) player_orientation = "right";
+			else player_orientation = "left";
+
 			//Height Test
 			if(isHeightTest)
 			{
@@ -460,18 +466,21 @@ public class Game extends ApplicationAdapter{
 
 	private void initiateRPGNPC()
 	{
-		int boundForgiveness = 15;
+		int boundForgiveness = 40;
+		int xOri = 1;
+		int yOri = 1;
+		boolean debug = true;
+
+		//Based on how the character is drawn NOT how the coords are represented
+		if((player_orientation == "right" && xOri == -1) || (player_orientation == "left" && xOri == 1)) xOri *= -1 ;
+		//if((player_orientation == "up" && xOri == -1) || (player_orientation == "up" && yOri == 1)) yOri *= -1 ;
 
 		//Check for interactions with NPCS - TODO: remove hard code for a function that takes dynamic coords
 
 		/*
-		if(p1.returnX() > 383 - boundForgiveness && p1.returnX() < 383 + boundForgiveness*2)
-		{
-			if(p1.returnY() > 505 - boundForgiveness && p1.returnY() < boundForgiveness*2)
-			{
-				if(Gdx.input.isButtonPressed(Input.Keys.E)) System.out.println("Works");
-			}
-		}
+		Seems that p1 draws from somewhere on the right side of the sprite and npc draws from the left
+		It could be because of how P1 is rendered with flip
+		So just add orientation to the interact method
 		 */
 
 		//Last resort
@@ -484,6 +493,17 @@ public class Game extends ApplicationAdapter{
 
 		//Render all NPCs
 		batch.draw(npc1.renderPlayer(), npc1.returnX(), npc1.returnY(), npc1.returnW(), npc1.returnH());
+
+		//Debug
+		if(debug)
+		{
+			System.out.println("\nNPC X: " + npc1.returnX() + "\nNPC Y: " + npc1.returnY() + "\nNPC W: " + npc1.returnW() + "\nNPC H: " + npc1.returnH() + "\nNPC oW: " + npc1.returnOrigW() + "\nNPC oH: " + npc1.returnOrigH());
+			System.out.println("\nPlayer X: " + p1.returnX() + "\nPlayer Y: " + p1.returnY() + "\nPlayer W: " + p1.returnW() + "\nPlayer H: " + p1.returnH() + "\nPlayer oW: " + p1.returnOrigW() + "\nPlayer oH: " + p1.returnOrigH());
+
+			System.out.println("\nCollision: ");
+			if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() - boundForgiveness * xOri) System.out.println("X Works");
+			//if(p1.returnY() + boundForgiveness * yOri * 0 > npc1.returnY()
+		}
 	}
 
 	//**************************************************************Misc**************************************************************
