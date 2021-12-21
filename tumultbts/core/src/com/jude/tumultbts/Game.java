@@ -42,6 +42,8 @@ public class Game extends ApplicationAdapter{
 	private Texture title;
 
 	private Texture area1;
+
+	private Texture textbox;
 	
 	private Player p1;
 	private Player p2; //Possibly
@@ -106,6 +108,7 @@ public class Game extends ApplicationAdapter{
 		vikingF = new Texture("./Viking_Female/idle_1.png");
 		vikingM = new Texture("./Viking_Male/idle_1.png");
 		area1 = new Texture("./backgrounds/jungle-ruins-preview.png");
+		textbox = new Texture("./ui/ui-textbox1.png");
 
 		state = -3;
 		cutscene = -1;
@@ -175,8 +178,8 @@ public class Game extends ApplicationAdapter{
 			case 0:
 				//loadFromSave();
 				loadWorld();
-				initiatePlayer(100, 100); //Change this eventually its just for testing
 				initiateRPGNPC();
+				initiatePlayer(100, 100); //Change this eventually its just for testing
 				break;
 				
 			default:
@@ -427,6 +430,7 @@ public class Game extends ApplicationAdapter{
 	
 	private void initiatePlayer(int paramX, int paramY)
 	{
+
 		if(!isCharacterMade)
 		{
 			char temp = sex.charAt(0); //Convert the string to char cause i was dumb
@@ -434,28 +438,34 @@ public class Game extends ApplicationAdapter{
 			isCharacterMade = true;
 		}
 
-			//TODO: Add Fighting mode to drawing
+		//TODO: Add Fighting mode to drawing
 
-			p1.updatePos();
-			batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW(), p1.returnOrigH(), p1.returnIsFlipX(), false);
+		p1.updatePos();
+		batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW(), p1.returnOrigH(), p1.returnIsFlipX(), false);
 
-			if(p1.returnIsFlipX()) player_orientation = "right";
-			else player_orientation = "left";
+		if(p1.returnIsFlipX()) player_orientation = "right";
+		else player_orientation = "left";
 
-			//Height Test
-			if(isHeightTest)
+		//Height Test
+		if(isHeightTest)
+		{
+			for(int i = 0; i < test.size(); i++)
 			{
-				for(int i = 0; i < test.size(); i++)
-				{
-					batch.draw(test.get(i).renderPlayer(), test.get(i).returnX() + 50 * i, test.get(i).returnY(), test.get(i).returnW(), test.get(i).returnH());
-				}
+				batch.draw(test.get(i).renderPlayer(), test.get(i).returnX() + 50 * i, test.get(i).returnY(), test.get(i).returnW(), test.get(i).returnH());
 			}
+		}
 
-			//Set Mode
-			if(mode == "rpg") p1.toggleRPG();
-			else if(mode ==  "fight") p1.toggleFight();
-			else System.err.println("ERROR: No Valid Mode Set");
+		//Set Mode
+		if(mode == "rpg") p1.toggleRPG();
+		else if(mode ==  "fight") p1.toggleFight();
+		else System.err.println("ERROR: No Valid Mode Set");
 
+		//Player interaction with NPCs
+		if(interact(p1, npc1))
+		{
+			//Displaty text box
+
+		}
 	}
 
 	//For later use whenever I get fighting mode to work
@@ -466,33 +476,34 @@ public class Game extends ApplicationAdapter{
 
 	private void initiateRPGNPC()
 	{
-		int boundForgiveness = 40;
-		int xOri = 1;
-		int yOri = 1;
-		boolean debug = true;
+		boolean debug = false;
 
-		//Based on how the character is drawn NOT how the coords are represented
-		if((player_orientation == "right" && xOri == -1) || (player_orientation == "left" && xOri == 1)) xOri *= -1 ;
-		//if((player_orientation == "up" && xOri == -1) || (player_orientation == "up" && yOri == 1)) yOri *= -1 ;
-
-		//Check for interactions with NPCS - TODO: remove hard code for a function that takes dynamic coords
-
-		/*
-		Seems that p1 draws from somewhere on the right side of the sprite and npc draws from the left
-		It could be because of how P1 is rendered with flip
-		So just add orientation to the interact method
-		 */
-
-		//Last resort
-
-
-		if(Gdx.input.isKeyPressed(Input.Keys.F)) System.out.println("\nPlayer X:" + p1.returnX() + "\nNPC X: " + npc1.returnX() + "\nPlayer Y: " + p1.returnY() + "\nNPC Y: " + npc1.returnY());
+		if(Gdx.input.isKeyPressed(Input.Keys.F) && debug) System.out.println("\nPlayer X:" + p1.returnX() + "\nNPC X: " + npc1.returnX() + "\nPlayer Y: " + p1.returnY() + "\nNPC Y: " + npc1.returnY());
 
 		//Set bounds
 		//TODO: need boundary code for the starting area
 
 		//Render all NPCs
 		batch.draw(npc1.renderPlayer(), npc1.returnX(), npc1.returnY(), npc1.returnW(), npc1.returnH());
+	}
+
+	//**************************************************************Misc**************************************************************
+
+	//Checks if characters can interact with NPC
+	private boolean interact(Player p, NPC n)
+	{
+		int boundForgiveness = 60;
+		int xOri = 1;
+		int yOri = 1;
+
+		boolean debug = false;
+
+		/*
+		Change where the hitbox is in front of the character based on how the character is facing
+		Based on how the character is drawn NOT how the coords are represented
+		 */
+		if((player_orientation == "right" && xOri == -1) || (player_orientation == "left" && xOri == 1)) xOri *= -1 ;
+		if((player_orientation == "up" && xOri == -1) || (player_orientation == "up" && yOri == 1)) yOri *= -1 ;
 
 		//Debug
 		if(debug)
@@ -501,31 +512,36 @@ public class Game extends ApplicationAdapter{
 			System.out.println("\nPlayer X: " + p1.returnX() + "\nPlayer Y: " + p1.returnY() + "\nPlayer W: " + p1.returnW() + "\nPlayer H: " + p1.returnH() + "\nPlayer oW: " + p1.returnOrigW() + "\nPlayer oH: " + p1.returnOrigH());
 
 			System.out.println("\nCollision: ");
-			if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() - boundForgiveness * xOri) System.out.println("X Works");
-			//if(p1.returnY() + boundForgiveness * yOri * 0 > npc1.returnY()
+
+			//Replace collision with a better collision method
+			if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() + boundForgiveness * xOri) System.out.println("\nX Works");
+			if(p1.returnY() + boundForgiveness * yOri > npc1.returnY() && npc1.returnY() + npc1.returnH() > p1.returnY() + boundForgiveness *yOri) System.out.println("\nY Works");
 		}
-	}
 
-	//**************************************************************Misc**************************************************************
-
-	//Checks if characters can interact with NPC
-	private boolean interact(Player p, NPC n)
-	{
-		//Collision for X assuming it starts drawing from bottom left corner
-		if(p.returnX() + p.returnW() > n.returnX() && p.returnX() < n.returnX() + n.returnW())
+		//Some very primitive collision
+		if(Gdx.input.isKeyPressed(Input.Keys.E))
 		{
-			System.out.println("X Collision works");
-
-			//Collision for Y
-			if(p.returnY() + p.returnH() > n.returnY() && p.returnY() < n.returnY() + n.returnH())
+			if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() + boundForgiveness * xOri)
 			{
-				System.out.println("Y Collision Works");
-
-				return true;
+				if(p1.returnY() + boundForgiveness * yOri > npc1.returnY() && npc1.returnY() + npc1.returnH() > p1.returnY() + boundForgiveness *yOri)
+				{
+					return true;
+				}
 			}
 		}
 
 		//No collision
 		return false;
+	}
+
+	private void textBox(String s, int posX, int posY)
+	{
+		//Determined by how many total character are in the string
+		int width = s.length();
+
+		//Determined by how many times the string has to wrap
+		int height;
+
+		batch.draw(textbox, posX, posY);
 	}
 }
