@@ -108,7 +108,7 @@ public class Game extends ApplicationAdapter{
 		vikingF = new Texture("./Viking_Female/idle_1.png");
 		vikingM = new Texture("./Viking_Male/idle_1.png");
 		area1 = new Texture("./backgrounds/jungle-ruins-preview.png");
-		textbox = new Texture("./ui/ui-textbox1.png");
+		textbox = new Texture("./ui/panel-Example1.png");
 
 		state = -3;
 		cutscene = -1;
@@ -463,8 +463,8 @@ public class Game extends ApplicationAdapter{
 		//Player interaction with NPCs
 		if(interact(p1, npc1))
 		{
-			//Displaty text box
-
+			//Display text box
+			textBox("TESTING TESTING");
 		}
 	}
 
@@ -534,14 +534,38 @@ public class Game extends ApplicationAdapter{
 		return false;
 	}
 
+	//TODO: Manual Text Box
 	private void textBox(String s, int posX, int posY)
 	{
-		//Determined by how many total character are in the string
-		int width = s.length();
+		/*
+		Make a textbox thats size changes for the amount of letters inside of it
+		so the letters can fit inside the text box
+		but for now a box that hits the middle of the screen should be
 
-		//Determined by how many times the string has to wrap
-		int height;
+		y = independent
+		x = screenWidth/2 - widthOfBox/2
+		width = independent
+		height = independent
+		 */
 
-		batch.draw(textbox, posX, posY);
+		batch.draw(textbox, screenWidth/2 - 250, 200, 500, 250);
+	}
+
+	//Makeshift Static Text Box
+	private void textBox(String s)
+	{
+		/*
+		Make a textbox thats size changes for the amount of letters inside of it
+		so the letters can fit inside the text box
+		but for now a box that hits the middle of the screen should be
+
+		y = independent
+		x = screenWidth/2 - widthOfBox/2
+		width = independent
+		height = independent
+
+		*/
+
+		batch.draw(textbox, screenWidth/2 - 250, 200, 500, 250);
 	}
 }
