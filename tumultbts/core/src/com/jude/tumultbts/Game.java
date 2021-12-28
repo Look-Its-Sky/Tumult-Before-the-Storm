@@ -13,9 +13,9 @@ import java.util.ArrayList;
 
 public class Game extends ApplicationAdapter{
 	
-	//Garbage Collector Friendly Variables
+	//Garbage Collector Friendly Variables somewhat
 	private int state;
-	private int cutscene, area;
+	private int area;
 	private int whereIsCursor;
 	private int screenHeight, screenWidth;
 
@@ -30,9 +30,10 @@ public class Game extends ApplicationAdapter{
 	private String mode;
 
 	private ArrayList<Text> temp;
+	private Text fade_temp;
 	private ArrayList<int[]> bounds;
 	
-	//Non-garbage Collector Friendly Variables
+	//Non-garbage Collector Friendly Variables somewhat
 	private SpriteBatch batch;
 	
 	private BitmapFont font, font2;
@@ -42,6 +43,7 @@ public class Game extends ApplicationAdapter{
 	private Texture title;
 
 	private Texture area1;
+	private Texture forest_fight;
 
 	private Texture textbox;
 	
@@ -93,27 +95,31 @@ public class Game extends ApplicationAdapter{
 		batch = new SpriteBatch();
 		
 		font = new BitmapFont();
-		font2 = new BitmapFont();
-		
-		background = new Texture("./misc/jungle-background.png");
-		title = new Texture("./misc/title_1.png");
-		pirateF = new Texture("./Pirate_Female/idle_1.png");
-		pirateM = new Texture("./Pirate_Male/idle_1.png");
-		royal_guardF = new Texture("./Royal_Guard_Female/idle_1.png");
-		royal_guardM = new Texture("./Royal_Guard_Male/idle_1.png");
-		samuraiF = new Texture("./Samurai_Female/idle_1.png");
-		samuraiM = new Texture("./Samurai_Male/idle_1.png");
-		spartanF = new Texture("./Spartan_Female/idle_1.png");
-		spartanM = new Texture("./Spartan_Male/idle_1.png");
-		vikingF = new Texture("./Viking_Female/idle_1.png");
-		vikingM = new Texture("./Viking_Male/idle_1.png");
-		area1 = new Texture("./backgrounds/jungle-ruins-preview.png");
-		textbox = new Texture("./ui/panel-Example1.png");
+		//font2 = new BitmapFont();
+
+		background = new Texture(Gdx.files.internal("misc/jungle-background.png"));
+		title = new Texture(Gdx.files.internal("misc/title_1.png"));
+		pirateF = new Texture(Gdx.files.internal("./Pirate_Female/idle_1.png"));
+		pirateM = new Texture(Gdx.files.internal("./Pirate_Male/idle_1.png"));
+		royal_guardF = new Texture(Gdx.files.internal("./Royal_Guard_Female/idle_1.png"));
+		royal_guardM = new Texture(Gdx.files.internal("./Royal_Guard_Male/idle_1.png"));
+		samuraiF = new Texture(Gdx.files.internal("./Samurai_Female/idle_1.png"));
+		samuraiM = new Texture(Gdx.files.internal("./Samurai_Male/idle_1.png"));
+		spartanF = new Texture(Gdx.files.internal("./Spartan_Female/idle_1.png"));
+		spartanM = new Texture(Gdx.files.internal("./Spartan_Male/idle_1.png"));
+		vikingF = new Texture(Gdx.files.internal("./Viking_Female/idle_1.png"));
+		vikingM = new Texture(Gdx.files.internal("./Viking_Male/idle_1.png"));
+		area1 = new Texture(Gdx.files.internal("./backgrounds/jungle-ruins-preview.png"));
+		textbox = new Texture(Gdx.files.internal("./ui/panel_Example1.png"));
+
+		forest_fight = new Texture(Gdx.files.internal("./stages/forest_fight.png"));
 
 		state = -3;
-		cutscene = -1;
 		area = 0;
 		whereIsCursor = 0;
+		when = 0;
+
+		mode = "rpg";
 
 		screenHeight = Gdx.graphics.getHeight();
 		screenWidth = Gdx.graphics.getWidth();
@@ -177,9 +183,19 @@ public class Game extends ApplicationAdapter{
 			//Load into world
 			case 0:
 				//loadFromSave();
-				loadWorld();
-				initiateRPGNPC();
-				initiatePlayer(100, 100); //Change this eventually its just for testing
+
+				if(mode == "rpg")
+				{
+					loadWorld();
+					initiateRPGNPC();
+					initiatePlayer(100, 100); //Change this eventually its just for testing
+				}
+
+				if(mode == "fighting")
+				{
+					loadStage(0); //Change Later
+				}
+
 				break;
 				
 			default:
@@ -334,7 +350,7 @@ public class Game extends ApplicationAdapter{
 		}
 	}
 
-	//0
+	//0 Works!
 	public void loadWorld()
 	{
 		switch(area)
@@ -363,12 +379,21 @@ public class Game extends ApplicationAdapter{
 			if(!isNPCInit)
 			{
 				ArrayList<String> temp = new ArrayList<String>();
-				temp.add("Testing testing");
+				temp.add("What! I thought you died years ago. How peculiar.... Anyways\n the boss would not like it if I let you slide by.");
 
 				npc1 = new NPC(383,505, 'f', "pirate", temp);
 			}
 		}
+	}
 
+	public void loadStage(int stage)
+	{
+		switch(stage)
+		{
+			case 0:
+				batch.draw(forest_fight, 0, 0, screenWidth, screenHeight);
+				break;
+		}
 	}
 
 	//**************************************************************Save States**************************************************************
@@ -421,15 +446,24 @@ public class Game extends ApplicationAdapter{
 
 	private void fadeAndFlash(Text text)
 	{
-		Text temp = new Text(text.returnText(), text.returnX(), text.returnY());
-		temp.fadeAndFlash(text.returnText());
-		font.draw(batch, temp.returnText(), temp.returnX(), temp.returnY());
+		boolean debug = false;
+
+		if(fade_temp == null)
+		{
+			fade_temp = new Text(text.returnText(), text.returnX(), text.returnY());
+
+			if(debug) System.out.println("Caught fade_temp as null");
+		}
+
+		fade_temp.fadeAndFlash(text.returnText());
+		font.draw(batch, fade_temp.returnText(), fade_temp.returnX(), fade_temp.returnY());
 	}
 	
 	//**************************************************************Characters**************************************************************
 	
 	private void initiatePlayer(int paramX, int paramY)
 	{
+
 
 		if(!isCharacterMade)
 		{
@@ -464,7 +498,13 @@ public class Game extends ApplicationAdapter{
 		if(interact(p1, npc1))
 		{
 			//Display text box
-			textBox("TESTING TESTING");
+			textBox(npc1.returnDialogue(0));
+
+			if(Gdx.input.isKeyPressed(Input.Keys.ENTER))
+			{
+				when++;
+				mode = "fighting";
+			}
 		}
 	}
 
@@ -519,7 +559,7 @@ public class Game extends ApplicationAdapter{
 		}
 
 		//Some very primitive collision
-		if(Gdx.input.isKeyPressed(Input.Keys.E))
+		if(Gdx.input.isKeyPressed(Input.Keys.E) || true) //Remove || true to "toggle hold for textbox"
 		{
 			if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() + boundForgiveness * xOri)
 			{
@@ -534,26 +574,11 @@ public class Game extends ApplicationAdapter{
 		return false;
 	}
 
-	//TODO: Manual Text Box
-	private void textBox(String s, int posX, int posY)
-	{
-		/*
-		Make a textbox thats size changes for the amount of letters inside of it
-		so the letters can fit inside the text box
-		but for now a box that hits the middle of the screen should be
-
-		y = independent
-		x = screenWidth/2 - widthOfBox/2
-		width = independent
-		height = independent
-		 */
-
-		batch.draw(textbox, screenWidth/2 - 250, 200, 500, 250);
-	}
-
 	//Makeshift Static Text Box
 	private void textBox(String s)
 	{
+		font.setColor( 0, 0, 0, 1);
+
 		/*
 		Make a textbox thats size changes for the amount of letters inside of it
 		so the letters can fit inside the text box
@@ -566,6 +591,10 @@ public class Game extends ApplicationAdapter{
 
 		*/
 
-		batch.draw(textbox, screenWidth/2 - 250, 200, 500, 250);
+		batch.draw(textbox, screenWidth/2 - 250, 0, 500, 250);
+		font.draw(batch, s,  screenWidth/2 - 200, 170);
+
+		//TODO: Add support for strings being spread across multiple text boxes
+		font.draw(batch, "Press ENTER to Accept Challenge", screenWidth/2 - 95, 100); //TODO: Make this fadeandflash
 	}
 }

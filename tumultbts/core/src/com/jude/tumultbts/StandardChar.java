@@ -148,42 +148,42 @@ public class StandardChar {
 		//Load attackAnim1
 		for (int i = 1; i < 4; i++)
 		{
-			attackAnim1.add(new Texture(path + au + i + ".png"));
+			attackAnim1.add(new Texture(Gdx.files.internal(path + au + i + ".png")));
 		}
 
 		//Load attackAnim2
 		for (int i = 1; i < 4; i++)
 		{
-			attackAnim2.add(new Texture(path + au2 + i + ".png"));
+			attackAnim2.add(new Texture(Gdx.files.internal(path + au2 + i + ".png")));
 		}
 
 		//Load attackAnim3
 		for (int i = 1; i < 4; i++)
 		{
-			attackAnim3.add(new Texture(path + au3 + i + ".png"));
+			attackAnim3.add(new Texture(Gdx.files.internal(path + au3 + i + ".png")));
 		}
 
 		//Misc Anims
 
 		//Dash Anim
-		dashAnim.add(new Texture(path + dash + 1 + ".png"));
-		dashAnim.add(new Texture(path + dash + 2 + ".png"));
+		dashAnim.add(new Texture(Gdx.files.internal(path + dash + 1 + ".png")));
+		dashAnim.add(new Texture(Gdx.files.internal(path + dash + 2 + ".png")));
 
 		//Hit Anim
-		hitAnim.add(new Texture(path + hit + ".png"));
-		hitAnim.add(new Texture(path + dead + ".png"));
-		hitAnim.add(new Texture(path + jump + ".png"));
+		hitAnim.add(new Texture(Gdx.files.internal(path + hit + ".png")));
+		hitAnim.add(new Texture(Gdx.files.internal(path + dead + ".png")));
+		hitAnim.add(new Texture(Gdx.files.internal(path + jump + ".png")));
 
 		//Run Anim
 		for (int i = 1; i < 5; i++)
 		{
-			runAnim.add(new Texture(path + run + i + ".png"));
+			runAnim.add(new Texture(Gdx.files.internal(path + run + i + ".png")));
 		}
 
 		//Idle Anim
 		for (int i = 1; i < 4; i++)
 		{
-			idleAnim.add(new Texture(path + idle + i + ".png"));
+			idleAnim.add(new Texture(Gdx.files.internal(path + idle + i + ".png")));
 		}
 		
 	}

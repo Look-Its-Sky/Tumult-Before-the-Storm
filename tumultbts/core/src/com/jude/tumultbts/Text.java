@@ -7,10 +7,12 @@ public class Text {
 
     private int x,y;
     private int flash;
+    private int counter;
 
     private boolean flashswitch;
     private boolean isShow;
     private boolean isSet;
+    private boolean isFlash;
 
     private String txt;
     private String temp;
@@ -20,10 +22,12 @@ public class Text {
         fade = 0;
         fade2 = 0;
         flash = 0;
+        counter = 0;
 
         flashswitch = false;
         isShow = true;
         isSet = false;
+        isFlash = false;
 
         txt = str;
         temp = txt;
@@ -34,19 +38,36 @@ public class Text {
 
     public void flashText(String str)
     {
+        boolean debug = false;
+        int flashIntensity = 30;
+
         if(isShow)
         {
             if(flashswitch == false)
             {
-                flashswitch = true;
-                temp = "";
+
+                if(counter >= flashIntensity)
+                {
+                    flashswitch = true;
+                    counter = 0;
+                }
+
+                else temp = "";
             }
 
-            else if(flashswitch == true)
+            if(flashswitch == true)
             {
-                flashswitch = false;
-                temp = txt;
+
+                if(counter >= flashIntensity)
+                {
+                    flashswitch = false;
+                    counter = 0;
+                }
+
+                else temp = txt;
             }
+
+            counter ++;
         }
 
         else
@@ -68,6 +89,8 @@ public class Text {
 
     public void fadeAndFlash(String str)
     {
+        boolean debug = false;
+
         //Avoid overwriting existing values
         if(!isSet)
         {
@@ -85,12 +108,13 @@ public class Text {
             if(fade < 1)
             {
                 fade += 0.02;
-                //System.out.println("Flash: " +  fade);
+
+                if(debug) System.out.println("Flash: " +  fade);
             }
 
             else
             {
-                //System.out.println("FLASHING");
+                if(debug) System.out.println("FLASHING");
                 flashText(str);
             }
         }
