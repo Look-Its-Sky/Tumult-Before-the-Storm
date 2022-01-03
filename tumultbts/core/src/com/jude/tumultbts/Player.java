@@ -34,6 +34,8 @@ public class Player extends StandardObj{
 	private boolean isHeavyAttack;
 	private boolean isDodge;
 	private boolean isFlipX;
+	private boolean isJump;
+	private int jumpCounter;
 
 	//What is the player doing
 	private String state;
@@ -61,6 +63,8 @@ public class Player extends StandardObj{
 		noAnimChange = true;
 		isFlipX = false;
 
+		jumpCounter = 0;
+
 		//Get input
 		updateInput();
 
@@ -76,7 +80,7 @@ public class Player extends StandardObj{
 		temp_curr = new String[2];
 	}
 
-	//NPC Class only
+	//NPC Class only -- I shouldve done this a better way -- This will be redone
 	public Player(int paramX, int paramY, char gender, String pClass, ArrayList<String> dialogue)
 	{
 		x = paramX;
@@ -238,7 +242,7 @@ public class Player extends StandardObj{
 		}
 	}
 
-	//Returns correct texture for current animation -- doesnt work yet
+	//Returns correct texture for current animation
 	public Texture renderPlayer()
 	{
 		//Check previous value of state
@@ -288,6 +292,12 @@ public class Player extends StandardObj{
 		else
 		{
 			mode = m;
+
+			if(mode == "fighting")
+			{
+				isUp = false;
+				isDown = false;
+			}
 		}
 	}
 
@@ -298,33 +308,39 @@ public class Player extends StandardObj{
 
 	public void toggleFight()
 	{
-		mode = "fight";
+		mode = "fighting";
 	}
 
 	//Position stuff
 	public void updatePos()
 	{
+		int multiplier = 1;
+
+		if(mode == "fighting") multiplier = 10;
+
 		if(isRight)
 		{
-			x += speed;
+			x += speed * multiplier;
 			isFlipX = true;
 		}
 
 		if(isLeft)
 		{
-			x -= speed;
+			x -= speed * multiplier;
 			isFlipX = false;
 		}
 
-		if(isDown)
+		if(isDown && mode == "rpg")
 		{
-			y -= speed;
+			y -= speed * multiplier;
 		}
 
-		if(isUp)
+		if(isUp && mode == "rpg")
 		{
-			y += speed;
+			y += speed * multiplier;
 		}
+
+		System.out.println(mode);
 	}
 
 	//Input stuff
@@ -365,6 +381,11 @@ public class Player extends StandardObj{
 				{
 					isDown = true;
 					isUp = false;
+				}
+
+				if(keycode == Input.Keys.S && mode == "fighting")
+				{
+					jump();
 				}
 
 				//Set current input
@@ -448,6 +469,16 @@ public class Player extends StandardObj{
 		});
 	}
 
+	protected void jump()
+	{
+		if(!isJump)
+		{
+			isJump = true;
+			y += 10;
+		}
+
+		else
+	}
 
 	//Helps to ease the speed of the frames switching
 	private boolean shouldFrameRender()

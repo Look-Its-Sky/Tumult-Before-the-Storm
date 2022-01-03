@@ -124,6 +124,7 @@ public class Game extends ApplicationAdapter{
 		isInGame = false;
 		isMenuOpen = false;
 		isCharacterMade = false;
+		isCharacterFightingReady = false;
 
 		temp = new ArrayList<Text>(); //A arraylist for handling all text scene by scene
 		player_orientation = "left";
@@ -215,7 +216,6 @@ public class Game extends ApplicationAdapter{
 		title.dispose();
 		background.dispose();
 		font.dispose();
-		font2.dispose();
 		pirateF.dispose();
 		pirateM.dispose();
 		royal_guardF.dispose();
@@ -400,8 +400,12 @@ public class Game extends ApplicationAdapter{
 
 				//Character Positions
 
-				//if()/
-				p1.pos(134,322);
+				if(!isCharacterFightingReady)
+				{
+					p1.setMode("fighting");
+					p1.pos(-150,24);
+					isCharacterFightingReady = true;
+				}
 
 				break;
 		}
@@ -489,10 +493,11 @@ public class Game extends ApplicationAdapter{
 		}
 
 		//Fighting mode multiplier
-		if(mode == "fighting") multiplier = 10;
+		if(mode == "fighting") multiplier = 5;
 
 		p1.updatePos();
-		batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW() * multiplier, p1.returnOrigH() * multiplier, p1.returnIsFlipX(), false);
+
+		batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW() * multiplier, p1.returnH() * multiplier, 0, 0, p1.returnOrigW(), p1.returnOrigH(), p1.returnIsFlipX(), false);
 
 		if(p1.returnIsFlipX()) player_orientation = "right";
 		else player_orientation = "left";

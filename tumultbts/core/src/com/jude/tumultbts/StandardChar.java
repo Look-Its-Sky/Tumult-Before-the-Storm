@@ -185,7 +185,6 @@ public class StandardChar {
 		{
 			idleAnim.add(new Texture(Gdx.files.internal(path + idle + i + ".png")));
 		}
-		
 	}
 	
 	//**************************************************************Getters**************************************************************
@@ -224,4 +223,6 @@ public class StandardChar {
 	{
 		return runAnim;
 	}
+
+	public ArrayList<Texture> returnJumpAnim() { return new Texture(Gdx.files.internal(path + jump + ".png")); }
 }
