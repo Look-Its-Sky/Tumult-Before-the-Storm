@@ -24,6 +24,7 @@ public class Game extends ApplicationAdapter{
 	private boolean isMenuOpen; //Note: this refers to in game
 	private boolean isInGame;
 	private boolean isCharacterMade;
+	private boolean isCharacterFightingReady;
 
 	private String sex;
 	private String player_class;
@@ -69,16 +70,9 @@ public class Game extends ApplicationAdapter{
 	/*
 	 * Gamestate notes
 	 * 
-	 * the higher the number represents how far you have progressed in game
-	 * 
-	 * 
-	 * cutscene notes
-	 * 
-	 * its a variable for cutscenes
-	 * defines what cutscene is being displayed
-	 * -1 = no cutscene is active 
-	 * 
-	 * 
+	 * Gamestate is what state the game is in (duh)
+	 * Either fighting or rpg for the most part
+	 *
 	 * area notes
 	 * 
 	 * area defines the area your character is currently in regardless of how far you have progressed
@@ -86,6 +80,9 @@ public class Game extends ApplicationAdapter{
 	 *
 	 * the temp arraylist holds all of the text temporarily to get around the function scope issue
 	 * this saves memory.... in theory, i hope
+	 *
+	 *
+	 * TODO: Make ArrayList for all NPCs rather than individual objects (duh what was i thinking prob tired)
 	*/
 
 	//**************************************************************My Objects and Variables**************************************************************
@@ -194,8 +191,10 @@ public class Game extends ApplicationAdapter{
 				if(mode == "fighting")
 				{
 					loadStage(0); //Change Later
-				}
+					initiateFightingNPC();
+					initiatePlayer(134, 322);
 
+				}
 				break;
 				
 			default:
@@ -391,7 +390,19 @@ public class Game extends ApplicationAdapter{
 		switch(stage)
 		{
 			case 0:
+
+				/*
+				134 322 Spawn for p1
+				322 is the floor
+				 */
+
 				batch.draw(forest_fight, 0, 0, screenWidth, screenHeight);
+
+				//Character Positions
+
+				if()/
+				p1.pos(134,322);
+
 				break;
 		}
 	}
@@ -464,6 +475,11 @@ public class Game extends ApplicationAdapter{
 	private void initiatePlayer(int paramX, int paramY)
 	{
 
+		/*
+		paramX/paramY - the beginning position of the character
+		 */
+
+		int multiplier = 1;
 
 		if(!isCharacterMade)
 		{
@@ -472,10 +488,11 @@ public class Game extends ApplicationAdapter{
 			isCharacterMade = true;
 		}
 
-		//TODO: Add Fighting mode to drawing
+		//Fighting mode multiplier
+		if(mode == "fighting") multiplier = 10;
 
 		p1.updatePos();
-		batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW(), p1.returnOrigH(), p1.returnIsFlipX(), false);
+		batch.draw(p1.renderPlayer(), p1.returnX(), p1.returnY(), p1.returnW(), p1.returnH(), 0, 0, p1.returnOrigW() * multiplier, p1.returnOrigH() * multiplier, p1.returnIsFlipX(), false);
 
 		if(p1.returnIsFlipX()) player_orientation = "right";
 		else player_orientation = "left";
@@ -491,11 +508,11 @@ public class Game extends ApplicationAdapter{
 
 		//Set Mode
 		if(mode == "rpg") p1.toggleRPG();
-		else if(mode ==  "fight") p1.toggleFight();
+		else if(mode ==  "fighting") p1.toggleFight();
 		else System.err.println("ERROR: No Valid Mode Set");
 
 		//Player interaction with NPCs
-		if(interact(p1, npc1))
+		if(interact(p1, npc1) && mode == "rpg")
 		{
 			//Display text box
 			textBox(npc1.returnDialogue(0));
@@ -511,7 +528,8 @@ public class Game extends ApplicationAdapter{
 	//For later use whenever I get fighting mode to work
 	private void initiateFightingNPC()
 	{
-
+		//Clear all npcs
+		npc1 = null;
 	}
 
 	private void initiateRPGNPC()
@@ -555,11 +573,11 @@ public class Game extends ApplicationAdapter{
 
 			//Replace collision with a better collision method
 			if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() + boundForgiveness * xOri) System.out.println("\nX Works");
-			if(p1.returnY() + boundForgiveness * yOri > npc1.returnY() && npc1.returnY() + npc1.returnH() > p1.returnY() + boundForgiveness *yOri) System.out.println("\nY Works");
+			if(p1.returnY() + boundForgiveness * yOri > npc1.returnY() && npc1.returnY() + npc1.returnH() > p1.returnY() + boundForgiveness * yOri) System.out.println("\nY Works");
 		}
 
 		//Some very primitive collision
-		if(Gdx.input.isKeyPressed(Input.Keys.E) || true) //Remove || true to "toggle hold for textbox"
+		if(mode == "rpg")
 		{
 			if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() + boundForgiveness * xOri)
 			{

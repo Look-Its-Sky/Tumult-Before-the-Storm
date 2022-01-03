@@ -29,6 +29,22 @@ public abstract class StandardObj {
 	{
 		return y;
 	}
+
+	public void Y(int y)
+	{
+		this.y = y;
+	}
+
+	public void X(int x)
+	{
+		this.x = x;
+	}
+
+	public void pos(int x, int y)
+	{
+		this.x = x;
+		this.y = y;
+	}
 	
 	//**************************************************************Dimensions**************************************************************
 	
