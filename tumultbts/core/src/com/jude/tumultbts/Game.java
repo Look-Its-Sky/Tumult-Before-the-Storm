@@ -400,7 +400,7 @@ public class Game extends ApplicationAdapter{
 
 				//Character Positions
 
-				if()/
+				//if()/
 				p1.pos(134,322);
 
 				break;
