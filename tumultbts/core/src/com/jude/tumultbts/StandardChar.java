@@ -224,5 +224,5 @@ public class StandardChar {
 		return runAnim;
 	}
 
-	public ArrayList<Texture> returnJumpAnim() { return new Texture(Gdx.files.internal(path + jump + ".png")); }
+	public Texture returnJumpAnim() { return new Texture(Gdx.files.internal(path + jump + ".png")); }
 }

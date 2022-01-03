@@ -193,7 +193,7 @@ public class Game extends ApplicationAdapter{
 				{
 					loadStage(0); //Change Later
 					initiateFightingNPC();
-					initiatePlayer(134, 322);
+					initiatePlayer(0, 0);
 
 				}
 				break;

@@ -95,6 +95,7 @@ public class Player extends StandardObj{
 		currentAnim = returnIdleAnim(); //Set default anim
 		noAnimChange = true;
 		isFlipX = false;
+		jumpCounter = 0;
 
 		//Set States
 		setStats(pClass);
@@ -245,6 +246,22 @@ public class Player extends StandardObj{
 	//Returns correct texture for current animation
 	public Texture renderPlayer()
 	{
+		int jumpHeight = 2;
+
+		if(isJump)
+		{
+			jumpCounter++;
+
+			if(jumpCounter >= jumpHeight)
+			{
+				isJump = false; //Stopping
+				jumpCounter = 0;
+			}
+
+			if(jumpCounter >= jumpHeight/2) y-= 8; //Falling
+			if(jumpCounter <= jumpHeight/2) y += 8; //Jumping
+		}
+
 		//Check previous value of state
 		String prev_state = state;
 
@@ -339,8 +356,6 @@ public class Player extends StandardObj{
 		{
 			y += speed * multiplier;
 		}
-
-		System.out.println(mode);
 	}
 
 	//Input stuff
@@ -383,9 +398,9 @@ public class Player extends StandardObj{
 					isUp = false;
 				}
 
-				if(keycode == Input.Keys.S && mode == "fighting")
+				if(keycode == Input.Keys.SPACE && mode == "fighting" && !isJump && false) //UH kinda disabled this because its borked but it makes my game unique🥲 ig
 				{
-					jump();
+					isJump = true;
 				}
 
 				//Set current input
@@ -467,17 +482,6 @@ public class Player extends StandardObj{
 				return false;
 			}
 		});
-	}
-
-	protected void jump()
-	{
-		if(!isJump)
-		{
-			isJump = true;
-			y += 10;
-		}
-
-		else
 	}
 
 	//Helps to ease the speed of the frames switching
