@@ -35,6 +35,7 @@ public class Player extends StandardObj{
 	private boolean isDodge;
 	private boolean isFlipX;
 	private boolean isJump;
+	private boolean canMove;
 	private int jumpCounter;
 
 	//What is the player doing
@@ -59,9 +60,11 @@ public class Player extends StandardObj{
 		pClassObj = new StandardChar(gender, pClass);
 
 		state = "idle";
+
 		currentAnim = returnIdleAnim(); //Set default anim
 		noAnimChange = true;
 		isFlipX = false;
+		canMove = true;
 
 		jumpCounter = 0;
 
@@ -266,8 +269,10 @@ public class Player extends StandardObj{
 		String prev_state = state;
 
 		//Check if the character should be idle
-		if(!isRight && !isLeft && !isUp && !isDown) state = "idle";
-		switch (state)
+		if(!isRight && !isLeft && !isUp && !isDown && canMove) state = "idle";
+
+
+		switch(state)
 		{
 			case "idle":
 				currentAnim = returnIdleAnim();
@@ -277,11 +282,25 @@ public class Player extends StandardObj{
 				currentAnim = returnRunAnim();
 				break;
 
+			case "nlight":
+				currentAnim = returnAttackAnim1();
+				break;
+
+			case "slight":
+				currentAnim = returnAttackAnim2();
+				break;
+
+			case "dlight":
+				currentAnim = returnAttackAnim3();
+				break;
+
 			default:
 				currentAnim = returnIdleAnim();
 				System.err.println("Error in Rendering Player");
 				break;
 		}
+
+		System.out.println(state);
 
 		if(prev_state != state)
 		{
@@ -398,7 +417,17 @@ public class Player extends StandardObj{
 					isUp = false;
 				}
 
-				if(keycode == Input.Keys.SPACE && mode == "fighting" && !isJump && false) //UH kinda disabled this because its borked but it makes my game unique🥲 ig
+				if(keycode == Input.Keys.J)
+				{
+					isLightAttack = true;
+				}
+
+				if(keycode == Input.Keys.K)
+				{
+					isHeavyAttack = true;
+				}
+
+				if(keycode == Input.Keys.SPACE && mode == "fighting" && !isJump && false) //UH kinda disabled this because its borked but it makes my game unique🥲 ig... lmao jp itll be fixed
 				{
 					isJump = true;
 				}
@@ -413,7 +442,29 @@ public class Player extends StandardObj{
 				if(temp_curr[0] == temp_prev[0] && temp_curr[1] == temp_prev[1]) noAnimChange = true;
 
 				//Check if the character is running
-				if(temp_curr[0] == "up" || temp_curr[0] == "down" || temp_curr[1] == "right" || temp_curr[1] == "left") state = "run";
+				if((temp_curr[0] == "up" || temp_curr[0] == "down" || temp_curr[1] == "right" || temp_curr[1] == "left") && canMove) state = "run";
+
+				//Attacks
+				if(mode == "fighting")
+				{
+					if(isDown && isLightAttack && canMove)
+					{
+						state = "dlight";
+						canMove = false;
+					}
+
+					if(isLightAttack && !isDown && !isRight && !isLeft && canMove)
+					{
+						state = "nlight";
+						canMove = false;
+					}
+
+					if((isLeft || isRight) && isLightAttack && canMove)
+					{
+						state = "slight";
+						canMove = false;
+					}
+				}
 
 				return true;
 			}
@@ -421,25 +472,13 @@ public class Player extends StandardObj{
 			@Override
 			public boolean keyUp(int keycode)
 			{
-				if (keycode == Input.Keys.A)
-				{
-					isLeft = false;
-				}
+				if(keycode == Input.Keys.A) isLeft = false;
+				if(keycode == Input.Keys.S) isDown = false;
+				if(keycode == Input.Keys.D) isRight = false;
+				if(keycode == Input.Keys.W) isUp = false;
 
-				if (keycode == Input.Keys.S)
-				{
-					isDown = false;
-				}
-
-				if (keycode == Input.Keys.D)
-				{
-					isRight = false;
-				}
-
-				if (keycode == Input.Keys.W)
-				{
-					isUp = false;
-				}
+				if(keycode == Input.Keys.J) isLightAttack = false;
+				if(keycode == Input.Keys.K) isHeavyAttack = false;
 
 				if(keycode == Input.Keys.SPACE && coord_mode) System.out.println("\nX: " + x + "\nY: " + y);
 
