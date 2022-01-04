@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import java.util.ArrayList;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class Player extends StandardObj{
 
@@ -269,28 +268,37 @@ public class Player extends StandardObj{
 		String prev_state = state;
 
 		//Check if the character should be idle
-		if(!isRight && !isLeft && !isUp && !isDown && canMove) state = "idle";
-
+		if(!isRight && !isLeft && !isUp && !isDown && lockedIn() == false) state = "idle";
 
 		switch(state)
 		{
 			case "idle":
+				isLightAttack = false;
+				isHeavyAttack = false;
 				currentAnim = returnIdleAnim();
 				break;
 
 			case "run":
+				isLightAttack = false;
+				isHeavyAttack = false;
 				currentAnim = returnRunAnim();
 				break;
 
 			case "nlight":
+				isLightAttack = true;
+				isHeavyAttack = false;
 				currentAnim = returnAttackAnim1();
 				break;
 
 			case "slight":
+				isLightAttack = true;
+				isHeavyAttack = false;
 				currentAnim = returnAttackAnim2();
 				break;
 
 			case "dlight":
+				isLightAttack = true;
+				isHeavyAttack = false;
 				currentAnim = returnAttackAnim3();
 				break;
 
@@ -299,8 +307,6 @@ public class Player extends StandardObj{
 				System.err.println("Error in Rendering Player");
 				break;
 		}
-
-		System.out.println(state);
 
 		if(prev_state != state)
 		{
@@ -393,41 +399,41 @@ public class Player extends StandardObj{
 				if(isRight) temp_prev[1] = "right";
 				else if(isLeft) temp_prev[1] = "left";
 
-				if(keycode == Input.Keys.W)
+				if(keycode == Input.Keys.W && lockedIn())
 				{
 					isUp = true;
 					isDown = false;
 				}
 
-				if(keycode == Input.Keys.A)
+				if(keycode == Input.Keys.A && lockedIn())
 				{
 					isLeft = true;
 					isRight = false;
 				}
 
-				if(keycode == Input.Keys.D)
+				if(keycode == Input.Keys.D && lockedIn())
 				{
 					isRight = true;
 					isLeft = false;
 				}
 
-				if(keycode == Input.Keys.S)
+				if(keycode == Input.Keys.S && lockedIn())
 				{
 					isDown = true;
 					isUp = false;
 				}
 
-				if(keycode == Input.Keys.J)
+				if(keycode == Input.Keys.J && lockedIn())
 				{
 					isLightAttack = true;
 				}
 
-				if(keycode == Input.Keys.K)
+				if(keycode == Input.Keys.K && lockedIn())
 				{
 					isHeavyAttack = true;
 				}
 
-				if(keycode == Input.Keys.SPACE && mode == "fighting" && !isJump && false) //UH kinda disabled this because its borked but it makes my game unique🥲 ig... lmao jp itll be fixed
+				if(keycode == Input.Keys.SPACE && mode == "fighting" && !isJump && false && lockedIn()) //UH kinda disabled this because its borked but it makes my game unique🥲 ig... lmao jp itll be fixed
 				{
 					isJump = true;
 				}
@@ -554,6 +560,13 @@ public class Player extends StandardObj{
 				if(isDebug) System.err.println("Error in Determining Frame");
 				return false;
 		}
+	}
+
+	//Is the anim locked in?
+	private boolean lockedIn()
+	{
+		if(animCounter >= currentAnim.size() && currentAnim != returnRunAnim() && currentAnim != returnIdleAnim()) return false;
+		else return true;
 	}
 
 	//Returns original dimensions of the images
