@@ -10,7 +10,6 @@ public class Player extends StandardObj{
 
 	//Anim Frame Counting
 	private int animCounter;
-	private int animSpeed;
 	private int animSpeedCount;
 
 	//Speed of Player
@@ -28,7 +27,6 @@ public class Player extends StandardObj{
 	private boolean isDown;
 	private boolean isLeft;
 	private boolean isRight;
-	private boolean isNoDirection;
 	private boolean isLightAttack;
 	private boolean isHeavyAttack;
 	private boolean isDodge;
@@ -268,7 +266,7 @@ public class Player extends StandardObj{
 		String prev_state = state;
 
 		//Check if the character should be idle
-		if(!isRight && !isLeft && !isUp && !isDown && lockedIn() == false) state = "idle";
+		if(!isRight && !isLeft && !isUp && !isDown && !isLightAttack && !isHeavyAttack) state = "idle";
 
 		switch(state)
 		{
@@ -399,41 +397,41 @@ public class Player extends StandardObj{
 				if(isRight) temp_prev[1] = "right";
 				else if(isLeft) temp_prev[1] = "left";
 
-				if(keycode == Input.Keys.W && lockedIn())
+				if(keycode == Input.Keys.W)
 				{
 					isUp = true;
 					isDown = false;
 				}
 
-				if(keycode == Input.Keys.A && lockedIn())
+				if(keycode == Input.Keys.A)
 				{
 					isLeft = true;
 					isRight = false;
 				}
 
-				if(keycode == Input.Keys.D && lockedIn())
+				if(keycode == Input.Keys.D)
 				{
 					isRight = true;
 					isLeft = false;
 				}
 
-				if(keycode == Input.Keys.S && lockedIn())
+				if(keycode == Input.Keys.S)
 				{
 					isDown = true;
 					isUp = false;
 				}
 
-				if(keycode == Input.Keys.J && lockedIn())
+				if(keycode == Input.Keys.J)
 				{
 					isLightAttack = true;
 				}
 
-				if(keycode == Input.Keys.K && lockedIn())
+				if(keycode == Input.Keys.K)
 				{
 					isHeavyAttack = true;
 				}
 
-				if(keycode == Input.Keys.SPACE && mode == "fighting" && !isJump && false && lockedIn()) //UH kinda disabled this because its borked but it makes my game unique🥲 ig... lmao jp itll be fixed
+				if(keycode == Input.Keys.SPACE && mode == "fighting" && !isJump && false) //UH kinda disabled this because its borked but it makes my game unique🥲 ig... lmao jp itll be fixed
 				{
 					isJump = true;
 				}
@@ -448,27 +446,33 @@ public class Player extends StandardObj{
 				if(temp_curr[0] == temp_prev[0] && temp_curr[1] == temp_prev[1]) noAnimChange = true;
 
 				//Check if the character is running
-				if((temp_curr[0] == "up" || temp_curr[0] == "down" || temp_curr[1] == "right" || temp_curr[1] == "left") && canMove) state = "run";
+				if(mode == "rpg" && (temp_curr[0] == "up" || temp_curr[0] == "down" || temp_curr[1] == "right" || temp_curr[1] == "left"))
+				{
+					state = "run";
+				}
+
+				else if(mode == "fighting" && (temp_curr[1] == "right" || temp_curr[1] == "left"))
+				{
+					state = "run";
+				}
+
 
 				//Attacks
 				if(mode == "fighting")
 				{
-					if(isDown && isLightAttack && canMove)
+					if(isDown && isLightAttack)
 					{
 						state = "dlight";
-						canMove = false;
 					}
 
-					if(isLightAttack && !isDown && !isRight && !isLeft && canMove)
+					if(isLightAttack && !isDown && !isRight && !isLeft)
 					{
 						state = "nlight";
-						canMove = false;
 					}
 
-					if((isLeft || isRight) && isLightAttack && canMove)
+					if((isLeft || isRight) && isLightAttack)
 					{
 						state = "slight";
-						canMove = false;
 					}
 				}
 
