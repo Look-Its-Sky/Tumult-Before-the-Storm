@@ -208,7 +208,7 @@ public class StandardChar {
 
 	//Heavy attacks
 
-	public ArrayList<>
+	//public ArrayList<>
 
 	//Misc
 
