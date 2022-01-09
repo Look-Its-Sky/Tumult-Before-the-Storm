@@ -188,7 +188,9 @@ public class StandardChar {
 	}
 	
 	//**************************************************************Getters**************************************************************
-	
+
+	//Light attacks
+
 	public ArrayList<Texture> returnAttackAnim1()
 	{
 		return attackAnim1;
@@ -203,7 +205,13 @@ public class StandardChar {
 	{
 		return attackAnim3;
 	}
-	
+
+	//Heavy attacks
+
+	public ArrayList<>
+
+	//Misc
+
 	public ArrayList<Texture> returnDashAnim()
 	{
 		return dashAnim;

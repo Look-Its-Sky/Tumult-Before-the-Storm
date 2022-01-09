@@ -25,6 +25,7 @@ public class Game extends ApplicationAdapter{
 	private boolean isInGame;
 	private boolean isCharacterMade;
 	private boolean isCharacterFightingReady;
+	private boolean isFightNPCInit;
 
 	private String sex;
 	private String player_class;
@@ -125,6 +126,7 @@ public class Game extends ApplicationAdapter{
 		isMenuOpen = false;
 		isCharacterMade = false;
 		isCharacterFightingReady = false;
+		isFightNPCInit = false;
 
 		temp = new ArrayList<Text>(); //A arraylist for handling all text scene by scene
 		player_orientation = "left";
@@ -194,7 +196,6 @@ public class Game extends ApplicationAdapter{
 					loadStage(0); //Change Later
 					initiateFightingNPC();
 					initiatePlayer(0, 0);
-
 				}
 				break;
 				
@@ -391,11 +392,6 @@ public class Game extends ApplicationAdapter{
 		{
 			case 0:
 
-				/*
-				134 322 Spawn for p1
-				322 is the floor
-				 */
-
 				batch.draw(forest_fight, 0, 0, screenWidth, screenHeight);
 
 				//Character Positions
@@ -535,6 +531,17 @@ public class Game extends ApplicationAdapter{
 	{
 		//Clear all npcs
 		npc1 = null;
+
+		int multiplier = 1;
+
+		if(mode == "fighting") multiplier = 5;
+
+		if(!isFightNPCInit)
+		{
+			npc1 = new NPC(400, 24, 'f', "pirate", new ArrayList<String>());
+		}
+
+		batch.draw(npc1.renderPlayer(), npc1.returnX(), npc1.returnY(), npc1.returnW() * multiplier, npc1.returnH() * multiplier, 0, 0, npc1.returnOrigW(), npc1.returnOrigH(), npc1.returnIsFlipX(), false);
 	}
 
 	private void initiateRPGNPC()

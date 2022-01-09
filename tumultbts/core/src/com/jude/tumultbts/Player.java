@@ -10,10 +10,11 @@ public class Player extends StandardObj{
 
 	//Anim Frame Counting
 	private int animCounter;
-	private int animSpeedCount;
+	private int animTimer;
+	private int currentRecFrames;
 
 	//Speed of Player
-	private final int speed = 2;
+	private int speed = 2;
 
 	//Use character to print coords
 	private final boolean coord_mode = true;
@@ -32,11 +33,12 @@ public class Player extends StandardObj{
 	private boolean isDodge;
 	private boolean isFlipX;
 	private boolean isJump;
-	private boolean canMove;
-	private int jumpCounter;
+
+	private boolean doIlisten;
 
 	//What is the player doing
 	private String state;
+	private String prev_state;
 	private String[] temp_curr, temp_prev;
 
 	//Determines whether or not if the player is in RPG or fighting mode
@@ -44,29 +46,27 @@ public class Player extends StandardObj{
 
 	//What animation should be playing
 	private ArrayList<Texture> currentAnim;
-	private boolean noAnimChange;
 
 	public Player(int paramX, int paramY, char gender, String pClass)
 	{
+		doIlisten = true;
+
 		x = paramX;
 		y = paramY;
 
 		animCounter = 0;
-		animSpeedCount = 0;
+		animTimer = 0;
+		currentRecFrames = 0;
 
 		pClassObj = new StandardChar(gender, pClass);
 
 		state = "idle";
 
 		currentAnim = returnIdleAnim(); //Set default anim
-		noAnimChange = true;
 		isFlipX = false;
-		canMove = true;
-
-		jumpCounter = 0;
 
 		//Get input
-		updateInput();
+		//updateInput();
 
 		//Set States
 		setStats(pClass);
@@ -83,19 +83,19 @@ public class Player extends StandardObj{
 	//NPC Class only -- I shouldve done this a better way -- This will be redone
 	public Player(int paramX, int paramY, char gender, String pClass, ArrayList<String> dialogue)
 	{
+		doIlisten = false;
+
 		x = paramX;
 		y = paramY;
 
 		animCounter = 0;
-		animSpeedCount = 0;
+		animTimer = 0;
 
 		pClassObj = new StandardChar(gender, pClass);
 
 		state = "idle";
 		currentAnim = returnIdleAnim(); //Set default anim
-		noAnimChange = true;
 		isFlipX = false;
-		jumpCounter = 0;
 
 		//Set States
 		setStats(pClass);
@@ -246,79 +246,75 @@ public class Player extends StandardObj{
 	//Returns correct texture for current animation
 	public Texture renderPlayer()
 	{
-		int jumpHeight = 2;
+		if(doIlisten) updateInputMakeShift();
 
-		if(isJump)
+		if(currentRecFrames <= 0)
 		{
-			jumpCounter++;
+			int ori;
 
-			if(jumpCounter >= jumpHeight)
-			{
-				isJump = false; //Stopping
-				jumpCounter = 0;
+			if(isFlipX) ori = 1;
+			else ori = -1;
+
+			switch(state) {
+				case "idle":
+					currentAnim = returnIdleAnim();
+					speed = 2;
+					break;
+
+				case "run":
+					currentAnim = returnRunAnim();
+					speed = 2;
+					break;
+
+				case "nlight":
+					currentAnim = returnAttackAnim1();
+					currentRecFrames = 10;
+					speed = 1;
+					break;
+
+				case "slight":
+					currentAnim = returnAttackAnim2();
+					currentRecFrames = 10;
+
+					x += speed * 40 * ori;
+					speed = 1;
+
+					break;
+
+				case "dlight":
+					currentAnim = returnAttackAnim3();
+					currentRecFrames = 10;
+					speed = 1;
+					break;
+
+				case "nheavy":
+					currentAnim = returnAttackAnim1();
+
+				default:
+					currentAnim = returnIdleAnim();
+					System.err.println("Error in Rendering Player");
+					break;
 			}
-
-			if(jumpCounter >= jumpHeight/2) y-= 8; //Falling
-			if(jumpCounter <= jumpHeight/2) y += 8; //Jumping
 		}
 
-		//Check previous value of state
-		String prev_state = state;
+		//Frame counting stuff
 
-		//Check if the character should be idle
-		if(!isRight && !isLeft && !isUp && !isDown && !isLightAttack && !isHeavyAttack) state = "idle";
+		if(currentRecFrames >= 0) currentRecFrames --;
 
-		switch(state)
+		//TODO: FIX COMPLETE ANIMATIONS
+
+		if(state  == "idle" || state == "run")
 		{
-			case "idle":
-				isLightAttack = false;
-				isHeavyAttack = false;
-				currentAnim = returnIdleAnim();
-				break;
+			autoResetAnimCounter();
+			if(shouldFrameRender() && currentRecFrames <= 0) nextFrame();
 
-			case "run":
-				isLightAttack = false;
-				isHeavyAttack = false;
-				currentAnim = returnRunAnim();
-				break;
-
-			case "nlight":
-				isLightAttack = true;
-				isHeavyAttack = false;
-				currentAnim = returnAttackAnim1();
-				break;
-
-			case "slight":
-				isLightAttack = true;
-				isHeavyAttack = false;
-				currentAnim = returnAttackAnim2();
-				break;
-
-			case "dlight":
-				isLightAttack = true;
-				isHeavyAttack = false;
-				currentAnim = returnAttackAnim3();
-				break;
-
-			default:
-				currentAnim = returnIdleAnim();
-				System.err.println("Error in Rendering Player");
-				break;
-		}
-
-		if(prev_state != state)
-		{
-			resetAnimCounter();
+			return currentAnim.get(animCounter);
 		}
 
 		else
 		{
-			//Frame counting stuff
-			autoResetAnimCounter();
-			if(noAnimChange && shouldFrameRender()) nextFrame();
+			return currentAnim.get(currentAnim.size() - 2);
 		}
-
-		return currentAnim.get(animCounter);
 	}
 
 	//Mode setting
@@ -384,6 +380,7 @@ public class Player extends StandardObj{
 	//Input stuff
 	public void updateInput()
 	{
+		/*
 		Gdx.input.setInputProcessor(new InputAdapter()
 		{
 			@Override
@@ -441,9 +438,6 @@ public class Player extends StandardObj{
 				if(isDown) temp_curr[0] = "down";
 				if(isRight) temp_curr[1] = "right";
 				if(isLeft) temp_curr[1] = "left";
-
-				//Check if the animation shouldnt be changed
-				if(temp_curr[0] == temp_prev[0] && temp_curr[1] == temp_prev[1]) noAnimChange = true;
 
 				//Check if the character is running
 				if(mode == "rpg" && (temp_curr[0] == "up" || temp_curr[0] == "down" || temp_curr[1] == "right" || temp_curr[1] == "left"))
@@ -531,30 +525,131 @@ public class Player extends StandardObj{
 				return false;
 			}
 		});
+
+		 */
+	}
+
+	private void updateInputMakeShift()
+	{
+		prev_state = state;
+
+		//Check if the character should be idle
+		if(!isRight && !isLeft && !isUp && !isDown && !isLightAttack && !isHeavyAttack) state = "idle";
+
+		//Movement
+
+		if(Gdx.input.isKeyPressed(Input.Keys.A)) isLeft = true;
+		else isLeft = false;
+
+		if(Gdx.input.isKeyPressed(Input.Keys.D)) isRight = true;
+		else isRight = false;
+
+		if(Gdx.input.isKeyPressed(Input.Keys.W)) isUp = true;
+		else isUp = false;
+
+		if(Gdx.input.isKeyPressed(Input.Keys.S)) isDown = true;
+		else isDown = false;
+
+		//Attacks
+
+		if(Gdx.input.isKeyPressed(Input.Keys.J)) isLightAttack = true;
+		else isLightAttack = false;
+
+		if(Gdx.input.isKeyPressed(Input.Keys.K)) isHeavyAttack = true;
+		else isHeavyAttack = false;
+
+		//Determine state
+
+		//When you didnt pay attention in principals of comp sci and dont know how advanced boolean equations work :|
+		if(isLeft || isRight || isUp || isDown)
+		{
+			if(!isLightAttack && !isHeavyAttack && mode == "rpg" && currentRecFrames <= 0) state = "run";
+		}
+
+		if(isLeft || isRight)
+		{
+			if(mode == "fighting" && !isLightAttack && !isHeavyAttack && currentRecFrames <= 0) state = "run";
+		}
+
+		if(!isLeft && !isRight && !isUp && !isDown && !isLightAttack && !isHeavyAttack && mode == "fighting" && currentRecFrames <= 0)
+		{
+			state = "idle";
+		}
+
+		if((isRight || isLeft) && isLightAttack && !isHeavyAttack && !isDown && mode == "fighting" && currentRecFrames <= 0)
+		{
+			state = "slight";
+		}
+
+
+		if(!isRight && !isLeft && !isHeavyAttack && !isDown && isLightAttack && mode == "fighting" && currentRecFrames <= 0)
+		{
+			state = "nlight";
+		}
+
+		if(isDown && isLightAttack && !isHeavyAttack && !isUp && !isRight && !isLeft && mode == "fighting" && currentRecFrames <= 0)
+		{
+			state = "dlight";
+		}
+
+		//WHOOOO HEAVY ATTACKS
+
+		if(!isUp && !isDown && !isLeft && !isRight && isHeavyAttack && !isLightAttack)
+		{
+			state = "nheavy";
+		}
+
+		if(!isUp && !isDown & !isLightAttack && isHeavyAttack)
+		{
+			if(isRight || isLeft) state = "sheavy";
+		}
+
+		if(!isUp && !isLeft && !isRight && !isLightAttack && isHeavyAttack && isDown)
+		{
+			state = "dheavy";
+		}
+	}
+
+	//Should the character be locked until anim is done
+	private boolean isLock()
+	{
+		if(state != "idle" || state != "run")
+		{
+			if(animCounter >= currentAnim.size() && mode == "fighting")
+			{
+				animCounter = 0;
+
+				return false;
+			}
+
+			else return true;
+		}
+
+		else return false;
 	}
 
 	//Helps to ease the speed of the frames switching
 	private boolean shouldFrameRender()
 	{
-		//So we dont overrun the int limit and crash which would be very bad
-		if (animSpeedCount + 1 > 2147483647) animSpeedCount = 0;
-		animSpeedCount++;
+		animTimer++;
 
 		switch(state)
 		{
 			case "idle":
-				if(animSpeedCount % 20 == 0)
+
+				if(animTimer >= 20)
 				{
-					if (isDebug) System.out.println(animSpeedCount);
+					animTimer = 0;
 					return true;
 				}
 
 				else return false;
 
 			case "run":
-				if(animSpeedCount %10 == 0)
+
+				if(animTimer >= 10)
 				{
-					if (isDebug) System.out.println(animSpeedCount);
+					animTimer = 0;
 					return true;
 				}
 
@@ -566,22 +661,15 @@ public class Player extends StandardObj{
 		}
 	}
 
-	//Is the anim locked in?
-	private boolean lockedIn()
-	{
-		if(animCounter >= currentAnim.size() && currentAnim != returnRunAnim() && currentAnim != returnIdleAnim()) return false;
-		else return true;
-	}
-
 	//Returns original dimensions of the images
 	public int returnOrigH()
 	{
-		return currentAnim.get(animCounter).getHeight();
+		return currentAnim.get(0).getHeight();
 	}
 
 	public int returnOrigW()
 	{
-		return currentAnim.get(animCounter).getWidth();
+		return currentAnim.get(0).getWidth();
 	}
 
 	public boolean returnIsFlipX()
