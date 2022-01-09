@@ -35,7 +35,7 @@ public class Game extends ApplicationAdapter{
 	private Text fade_temp;
 	private ArrayList<int[]> bounds;
 	
-	//Non-garbage Collector Friendly Variables somewhat
+	//Non-garbage Collector Friendly Variables.... somewhat
 	private SpriteBatch batch;
 	
 	private BitmapFont font, font2;
@@ -67,6 +67,14 @@ public class Game extends ApplicationAdapter{
 	private final int[] p2DefaultFightingPos = {500,500};
 
 	private final boolean isHeightTest = false;
+
+	//Splash Screen Assets
+	private Texture before_the_storm;
+	private Texture jude_presents;
+	private Texture realization;
+	private Texture wrongtitle;
+	private Texture tumult;
+	private int splash_timer;
 
 	/*
 	 * Gamestate notes
@@ -111,6 +119,13 @@ public class Game extends ApplicationAdapter{
 		textbox = new Texture(Gdx.files.internal("./ui/panel_Example1.png"));
 
 		forest_fight = new Texture(Gdx.files.internal("./stages/forest_fight.png"));
+
+		before_the_storm = new Texture(Gdx.files.internal("./misc/splash/beforethestorm.png"));
+		jude_presents = new Texture(Gdx.files.internal("./misc/splash/jude_presents.png"));
+		realization = new Texture(Gdx.files.internal("./misc/splash/realization.png"));
+		tumult = new Texture(Gdx.files.internal("./misc/splash/tumult.png"));
+		wrongtitle = new Texture(Gdx.files.internal("./misc/splash/wrongtitle.png"));
+		splash_timer = 0;
 
 		state = -3;
 		area = 0;
@@ -159,6 +174,7 @@ public class Game extends ApplicationAdapter{
 		{
 			//Add splash screen
 			case -5:
+				splash();
 				break;
 
 			//Start menu
@@ -626,5 +642,20 @@ public class Game extends ApplicationAdapter{
 
 		//TODO: Add support for strings being spread across multiple text boxes
 		font.draw(batch, "Press ENTER to Accept Challenge", screenWidth/2 - 95, 100); //TODO: Make this fadeandflash
+	}
+
+	//Splash Screen
+	private void splash()
+	{
+		/*
+		LibGDX doesnt support transparancy with textures so TODO: turn these to sprites later and then use opacity
+
+		.....yes i read the documentation
+		 */
+
+		if(splash_timer >= 0 && splash_timer <= 10)
+		{
+			batch.draw(jude_presents,screenWidth/2 - 100, 100);
+		}
 	}
 }
