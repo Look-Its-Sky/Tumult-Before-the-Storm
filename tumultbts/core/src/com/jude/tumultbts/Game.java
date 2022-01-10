@@ -4,12 +4,18 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 
 import java.awt.geom.Area;
+import java.io.File;
+import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Game extends ApplicationAdapter{
 	
@@ -69,12 +75,20 @@ public class Game extends ApplicationAdapter{
 	private final boolean isHeightTest = false;
 
 	//Splash Screen Assets
-	private Texture before_the_storm;
-	private Texture jude_presents;
-	private Texture realization;
-	private Texture wrongtitle;
-	private Texture tumult;
-	private int splash_timer;
+	private Sprite before_the_storm;
+	private Sprite jude_presents;
+	private Sprite realization;
+	private Sprite wrongtitle;
+	private Sprite tumult;
+	private float splash_timer;
+	private float splash_fade1,splash_fade2,splash_fade3,splash_fade4,splash_fade5;
+	private boolean isSplashSetUp;
+	private boolean isRightTitle;
+
+	//Save State
+	private File save; //Dont think i need this but wtv
+	private Scanner scan;
+	private int saveX, saveY;
 
 	/*
 	 * Gamestate notes
@@ -96,10 +110,9 @@ public class Game extends ApplicationAdapter{
 
 	//**************************************************************My Objects and Variables**************************************************************
 	@Override
-	public void create()
-	{
+	public void create() {
 		batch = new SpriteBatch();
-		
+
 		font = new BitmapFont();
 		//font2 = new BitmapFont();
 
@@ -120,14 +133,21 @@ public class Game extends ApplicationAdapter{
 
 		forest_fight = new Texture(Gdx.files.internal("./stages/forest_fight.png"));
 
-		before_the_storm = new Texture(Gdx.files.internal("./misc/splash/beforethestorm.png"));
-		jude_presents = new Texture(Gdx.files.internal("./misc/splash/jude_presents.png"));
-		realization = new Texture(Gdx.files.internal("./misc/splash/realization.png"));
-		tumult = new Texture(Gdx.files.internal("./misc/splash/tumult.png"));
-		wrongtitle = new Texture(Gdx.files.internal("./misc/splash/wrongtitle.png"));
+		before_the_storm = new Sprite(new Texture(Gdx.files.internal("splash/beforethestorm.png")));
+		jude_presents = new Sprite(new Texture(Gdx.files.internal("splash/jude_presents.png")));
+		realization = new Sprite(new Texture(Gdx.files.internal("splash/realization.png")));
+		tumult = new Sprite(new Texture(Gdx.files.internal("splash/tumult.png")));
+		wrongtitle = new Sprite(new Texture(Gdx.files.internal("splash/wrongtitle.png")));
+		splash_fade1 = 0;
+		splash_fade2 = 0;
+		splash_fade3 = 0;
+		splash_fade4 = 0;
+		splash_fade5 = 0;
 		splash_timer = 0;
+		isSplashSetUp = false;
+		isRightTitle = false;
 
-		state = -3;
+		state = -5;
 		area = 0;
 		whereIsCursor = 0;
 		when = 0;
@@ -168,13 +188,26 @@ public class Game extends ApplicationAdapter{
 		ScreenUtils.clear(1, 0, 0, 1);
 		batch.begin();
 
-		if(state > -5 && state  < 0) batch.draw(background, 0, 0, screenWidth, screenHeight);
+		if(state  < 0) batch.draw(background, 0, 0, screenWidth, screenHeight);
 
 		switch(state)
 		{
 			//Add splash screen
 			case -5:
 				splash();
+
+				if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
+				{
+					if(loadFromSave() == 0) //Success
+					{
+						System.out.println("Success");
+					}
+
+					else
+					{
+						System.err.println("Error Loading Save File");
+					}
+				}
 				break;
 
 			//Start menu
@@ -204,7 +237,14 @@ public class Game extends ApplicationAdapter{
 				{
 					loadWorld();
 					initiateRPGNPC();
-					initiatePlayer(100, 100); //Change this eventually its just for testing
+
+					if(saveX == 0 || saveY == 0) initiatePlayer(100, 100); //Change this eventually its just for testing
+					else initiatePlayer(saveX, saveY);
+
+					if(Gdx.input.isKeyPressed(Input.Keys.BACKSPACE))
+					{
+						writeToSave();
+					}
 				}
 
 				if(mode == "fighting")
@@ -260,7 +300,7 @@ public class Game extends ApplicationAdapter{
 		startFade(temp.get(0));
 		fadeAndFlash(temp.get(1));
 
-		if(Gdx.input.isKeyPressed(Input.Keys.ENTER))
+		if(Gdx.input.isKeyJustPressed(Input.Keys.ENTER))
 		{
 			temp.clear();
 			state++;
@@ -424,18 +464,82 @@ public class Game extends ApplicationAdapter{
 	}
 
 	//**************************************************************Save States**************************************************************
-	
-	//Strong maybe but it would be cool
-	public int loadFromSave()
+
+	private int loadFromSave()
 	{
+		boolean success = false;
+		String coords;
+
+		try
+		{
+			//Pls no mem leak or os permission errors or any of the plethora of things that can happen with this horribly rushed solution
+			//The next game is going to be written in C++ i swear just pls dont break
+
+			saveX = Integer.parseInt(Files.readAllLines(Paths.get("savefile.txt")).get(0));
+			saveY = Integer.parseInt(Files.readAllLines(Paths.get("savefile.txt")).get(1));
+
+			//Success ig?
+			success = true;
+		}
+
+		catch(Exception e)
+		{
+			System.err.println(e);
+		}
+
+		finally
+		{
+			if(success)
+			{
+				System.out.println("FOUND SAVE YYAYAYAYYAY: \n" + "X: " + saveX + "\nY: " + saveY);
+				return 0;
+			}
+		}
+
+		return -1;
+	}
+
+	private int writeToSave()
+	{
+		File file = new File("savefile.txt");
+		file.delete();
+
+		try
+		{
+			FileWriter write = new FileWriter("savefile.txt");
+
+			write.write(p1.returnX() + "\n" + p1.returnY());
+			write.close();
+
+			System.out.println("Wrote to file");
+		}
+
+		catch(Exception e)
+		{
+			System.out.println(e);
+		}
+
 		return 1;
 	}
 
-	public int writeToSave()
+	private int deleteSave()
 	{
-		return 1;
+		try
+		{
+			File file = new File("savefile");
+			file.delete();
+
+			return 0;
+		}
+
+		catch(Exception e)
+		{
+			System.out.println(e);
+
+			return -1;
+		}
 	}
-	
+
 	//**************************************************************Text Anim**************************************************************
 	
 	//Note all this code below is kinda bad and should be redone -- edit: i somehow made it worse lmao
@@ -653,9 +757,92 @@ public class Game extends ApplicationAdapter{
 		.....yes i read the documentation
 		 */
 
-		if(splash_timer >= 0 && splash_timer <= 10)
+		jude_presents.setX(screenWidth/2 - 450);
+		jude_presents.setY(600);
+
+		wrongtitle.setX(screenWidth/2 - 420);
+		wrongtitle.setY(500);
+
+		realization.setX(screenWidth/2 - 200);
+		realization.setY(400);
+
+		tumult.setX(screenWidth/2 - 350);
+		tumult.setY(300);
+
+		before_the_storm.setX(screenWidth/2 - 430);
+		before_the_storm.setY(100);
+
+		if(!isSplashSetUp)
 		{
-			batch.draw(jude_presents,screenWidth/2 - 100, 100);
+			splash_timer = 0;
+
+			isSplashSetUp = true;
+		}
+
+		else
+		{
+			if(splash_fade1 <= 1)
+			{
+				splash_fade1 += 0.01;
+			}
+
+			/*
+			Fix bug where it adds to over 1... yes a computer which is supposed to be the closest thing to perfect we have adds over 1 when i specifically said not to
+			man screw java who said lets run apps in a vm cause its not slow enough
+			 */
+
+			if(splash_fade1 > 1) splash_fade1 = 1;
+
+			if(splash_fade1 >= 1 && splash_fade2 <= 1)
+			{
+				splash_fade2 += 0.01;
+			}
+
+			if(splash_fade2 > 1) splash_fade2 = 1;
+
+			if(splash_fade1 >= 1 && splash_fade2 >= 1 && splash_fade3 <= 1)
+			{
+				splash_fade3 += 0.01;
+			}
+
+			if(splash_fade3 >= 1)
+			{
+				splash_fade3 = 1;
+
+				if(splash_timer >= 20)
+				{
+					isRightTitle = true;
+				}
+
+				else
+				{
+					splash_timer ++;
+				}
+			}
+
+			if(splash_fade1 >= 1 && splash_fade2 >= 1 && splash_fade3 >= 1 && splash_fade4 <= 1)
+			{
+				splash_fade4 += 0.01;
+			}
+
+			if(splash_fade4 >= 1) splash_fade4 = 1;
+
+			if(splash_fade1 >= 1 && splash_fade2 >= 1 && splash_fade3 >= 1 && splash_fade4 >= 1 && splash_fade5 <= 1)
+			{
+				splash_fade5 += 0.01;
+			}
+
+			if(splash_fade5 >= 0.01) splash_fade5 = 1;
+
+			jude_presents.draw(batch, splash_fade1);
+			if(!isRightTitle) wrongtitle.draw(batch, splash_fade2);
+			if(!isRightTitle) realization.draw(batch, splash_fade3);
+			if(isRightTitle) tumult.draw(batch, splash_fade4);
+			if(isRightTitle) before_the_storm.draw(batch, splash_fade5);
+
+			if(Gdx.input.isKeyPressed(Input.Keys.ENTER)) state  = -3;
+
 		}
 	}
+
 }

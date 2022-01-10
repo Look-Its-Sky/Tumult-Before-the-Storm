@@ -19,8 +19,9 @@ public class DesktopLauncher {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
 		//Window settings
-		config.title = "Tumult: Before the Storm";
+		config.title = "Tumult: Before the Storm DEMO";
 		config.resizable = false;
+
 		/*
 		Fullscreen is still in development default to 720p
 
