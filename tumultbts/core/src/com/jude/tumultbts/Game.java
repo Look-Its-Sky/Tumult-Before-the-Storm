@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import java.awt.geom.Area;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -196,8 +197,6 @@ public class Game extends ApplicationAdapter{
 			case -5:
 				splash();
 
-				/*
-
 				if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
 				{
 					if(loadFromSave() == 0) //Success
@@ -210,7 +209,6 @@ public class Game extends ApplicationAdapter{
 						System.err.println("Error Loading Save File");
 					}
 				}
-				 */
 
 				break;
 
@@ -256,6 +254,12 @@ public class Game extends ApplicationAdapter{
 					loadStage(0); //Change Later
 					initiateFightingNPC();
 					initiatePlayer(0, 0);
+
+					if(isCollide(p1, npc1))
+					{
+						npc1.setState("hit");
+						System.out.println("Hit");
+					}
 				}
 				break;
 				
@@ -479,8 +483,8 @@ public class Game extends ApplicationAdapter{
 			//Pls no mem leak or os permission errors or any of the plethora of things that can happen with this horribly rushed solution
 			//The next game is going to be written in C++ i swear just pls dont break
 
-			saveX = Integer.parseInt(Files.readAllLines(Paths.get("savefile.txt")).get(0));
-			saveY = Integer.parseInt(Files.readAllLines(Paths.get("savefile.txt")).get(1));
+			saveX = Integer.parseInt(Files.readAllLines(Paths.get("savefile.txt"), Charset.defaultCharset()).get(0));
+			saveY = Integer.parseInt(Files.readAllLines(Paths.get("savefile.txt"), Charset.defaultCharset()).get(1));
 
 			//Success ig?
 			success = true;
@@ -847,6 +851,29 @@ public class Game extends ApplicationAdapter{
 			if(Gdx.input.isKeyPressed(Input.Keys.ENTER)) state  = -3;
 
 		}
+	}
+
+	//Pray for my sanity pls
+	private boolean isCollide(Player p, NPC n)
+	{
+		int boundForgiveness = 60;
+		int xOri = 1;
+		int yOri = 1;
+
+		boolean debug = false;
+
+		if((player_orientation == "right" && xOri == -1) || (player_orientation == "left" && xOri == 1)) xOri *= -1 ;
+		if((player_orientation == "up" && xOri == -1) || (player_orientation == "up" && yOri == 1)) yOri *= -1 ;
+
+		if(p1.returnX() + boundForgiveness * xOri > npc1.returnX() && npc1.returnX() + npc1.returnW() > p1.returnX() + boundForgiveness * xOri)
+		{
+			if(p1.returnY() + boundForgiveness * yOri > npc1.returnY() && npc1.returnY() + npc1.returnH() > p1.returnY() + boundForgiveness *yOri)
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 }

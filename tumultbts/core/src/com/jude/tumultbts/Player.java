@@ -34,6 +34,8 @@ public class Player extends StandardObj{
 	private boolean isFlipX;
 	private boolean isJump;
 
+	private boolean isHit;
+
 	private boolean doIlisten;
 
 	//What is the player doing
@@ -233,7 +235,9 @@ public class Player extends StandardObj{
 			case "nlight":
 			
 			case "dlight":
-			
+
+			case "hit":
+
 			case "idle":
 				state = s;
 				break;
@@ -255,7 +259,8 @@ public class Player extends StandardObj{
 			if(isFlipX) ori = 1;
 			else ori = -1;
 
-			switch(state) {
+			switch(state)
+			 {
 				case "idle":
 					currentAnim = returnIdleAnim();
 					speed = 2;
@@ -278,17 +283,21 @@ public class Player extends StandardObj{
 
 					x += speed * 40 * ori;
 					speed = 1;
-
 					break;
 
 				case "dlight":
 					currentAnim = returnAttackAnim3();
 					currentRecFrames = 10;
+
+					x -= speed * 40 * ori;
 					speed = 1;
 					break;
 
-				case "nheavy":
-					currentAnim = returnAttackAnim1();
+				case "hit":
+					currentAnim = returnHitAnim();
+					currentRecFrames = 5;
+					speed = 0;
+					System.out.println("HIT");
 
 				default:
 					currentAnim = returnIdleAnim();
@@ -335,6 +344,18 @@ public class Player extends StandardObj{
 				isDown = false;
 			}
 		}
+	}
+
+	public void hit()
+	{
+		isHit = true;
+		state = "hit";
+	}
+
+	public boolean isAttack()
+	{
+		if(isLightAttack || isHeavyAttack) return true;
+		else return false;
 	}
 
 	public void toggleRPG()
