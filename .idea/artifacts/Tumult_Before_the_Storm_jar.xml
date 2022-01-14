@@ -1,0 +1,31 @@
+<component name="ArtifactManager">
+  <artifact name="Tumult-Before-the-Storm:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Tumult_Before_the_Storm_jar</output-path>
+    <root id="root">
+      <element id="archive" name="Tumult-Before-the-Storm.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/tumultbts/core/src/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="module-output" name="tumultbts.core.main" />
+        <element id="module-output" name="tumultbts.desktop.main" />
+      </element>
+      <element id="library" level="project" name="Gradle: net.java.jinput:jinput:2.0.5" />
+      <element id="library" level="project" name="Gradle: com.badlogicgames.jlayer:jlayer:1.0.1-gdx" />
+      <element id="library" level="project" name="Gradle: org.jcraft:jorbis:0.0.17" />
+      <element id="library" level="project" name="Gradle: net.java.jinput:jinput-platform:natives-windows:2.0.5" />
+      <element id="library" level="project" name="Gradle: com.badlogicgames.gdx:gdx-box2d:1.10.0" />
+      <element id="library" level="project" name="Gradle: com.badlogicgames.gdx:gdx:1.10.0" />
+      <element id="library" level="project" name="Gradle: org.lwjgl.lwjgl:lwjgl_util:2.9.3" />
+      <element id="library" level="project" name="Gradle: org.lwjgl.lwjgl:lwjgl-platform:natives-linux:2.9.3" />
+      <element id="library" level="project" name="Gradle: net.java.jutils:jutils:1.0.0" />
+      <element id="library" level="project" name="Gradle: com.badlogicgames.gdx:gdx-box2d-platform:natives-desktop:1.10.0" />
+      <element id="library" level="project" name="Gradle: org.lwjgl.lwjgl:lwjgl:2.9.3" />
+      <element id="library" level="project" name="Gradle: net.java.jinput:jinput-platform:natives-linux:2.0.5" />
+      <element id="library" level="project" name="Gradle: org.lwjgl.lwjgl:lwjgl-platform:natives-osx:2.9.3" />
+      <element id="library" level="project" name="Gradle: org.lwjgl.lwjgl:lwjgl-platform:natives-windows:2.9.3" />
+      <element id="library" level="project" name="Gradle: com.badlogicgames.gdx:gdx-platform:natives-desktop:1.10.0" />
+      <element id="library" level="project" name="Gradle: net.java.jinput:jinput-platform:natives-osx:2.0.5" />
+      <element id="library" level="project" name="Gradle: com.badlogicgames.gdx:gdx-backend-lwjgl:1.10.0" />
+    </root>
+  </artifact>
+</component>

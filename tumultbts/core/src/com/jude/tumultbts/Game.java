@@ -196,6 +196,8 @@ public class Game extends ApplicationAdapter{
 			case -5:
 				splash();
 
+				/*
+
 				if(Gdx.input.isKeyPressed(Input.Keys.SPACE))
 				{
 					if(loadFromSave() == 0) //Success
@@ -208,6 +210,8 @@ public class Game extends ApplicationAdapter{
 						System.err.println("Error Loading Save File");
 					}
 				}
+				 */
+
 				break;
 
 			//Start menu
